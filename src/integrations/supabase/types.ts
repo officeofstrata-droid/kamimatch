@@ -616,32 +616,41 @@ export type Database = {
         Row: {
           created_at: string
           decision_at: string | null
+          hosted_url: string | null
           id: string
+          last_event_id: string | null
           provider: string
           provider_session_id: string | null
           status: string
           user_id: string
           verified_birth_date: string | null
+          workflow_id: string | null
         }
         Insert: {
           created_at?: string
           decision_at?: string | null
+          hosted_url?: string | null
           id?: string
+          last_event_id?: string | null
           provider?: string
           provider_session_id?: string | null
           status?: string
           user_id: string
           verified_birth_date?: string | null
+          workflow_id?: string | null
         }
         Update: {
           created_at?: string
           decision_at?: string | null
+          hosted_url?: string | null
           id?: string
+          last_event_id?: string | null
           provider?: string
           provider_session_id?: string | null
           status?: string
           user_id?: string
           verified_birth_date?: string | null
+          workflow_id?: string | null
         }
         Relationships: [
           {
