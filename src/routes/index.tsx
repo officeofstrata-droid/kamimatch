@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { Discovery } from '@/components/Discovery';
 import { useRef, useState } from "react";
 import { Heart, X, Star, RotateCcw, ShieldCheck, Flame, MessageCircle, User, Sparkles, Tv } from "lucide-react";
 import ren from "@/assets/char-ren.jpg";
@@ -131,6 +132,7 @@ function Index() {
     setKey((k) => k + 1);
   };
 
+  if (user) return <Discovery />;
   return (
     <main className="sakura-sky relative min-h-screen font-sans text-foreground">
       <Petals />
@@ -142,7 +144,7 @@ function Index() {
             <Flame className="h-7 w-7 text-primary" fill="currentColor" />
             <span className="text-brand font-display text-2xl">waifumatch</span>
           </div>
-          <Button variant="ghost" size="icon" disabled title="Messages are not available yet" aria-label="Messages not available yet" className="rounded-full text-muted-foreground"><MessageCircle className="h-6 w-6" /></Button>
+          <Button asChild variant="ghost" size="icon" className="rounded-full text-muted-foreground"><Link to="/messages" aria-label="Messages"><MessageCircle className="h-6 w-6" /></Link></Button>
         </header>
 
         <nav className="mb-3 flex gap-2">
