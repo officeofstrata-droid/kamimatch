@@ -116,7 +116,7 @@ function Index() {
         </header>
 
         <p className="mb-3 rounded-full bg-secondary px-4 py-1.5 text-center text-xs font-bold text-secondary-foreground">
-          🌸 18+ only — every profile is ID verified
+          ✿ 18+ only — every profile is ID verified
         </p>
 
         {/* Deck */}
