@@ -5,7 +5,8 @@ import { requireSupabaseAuth } from '@/integrations/supabase/auth-middleware';
 
 export const getMedia = createServerFn({ method: 'GET' }).middleware([requireSupabaseAuth]).handler(async ({ context }) => {
  const { supabase, userId } = context;
- const [rows,premium,jobs] = await Promise.all([supabase.from('profile_media').select('*').eq('user_id',userId).order('created_at'),supabase.rpc('is_premium',{_user_id:userId}),supabase.from('photo_jobs').select('id,status,created_at').eq('user_id',userId).gte('created_at',new Date(new Date().getUTCFullYear(),new Date().getUTCMonth(),1).toISOString())]);
+ const now=new Date();
+ const [rows,premium,jobs] = await Promise.all([supabase.from('profile_media').select('*').eq('user_id',userId).order('created_at'),supabase.rpc('is_premium',{_user_id:userId}),supabase.from('photo_jobs').select('id,status,created_at').eq('user_id',userId).gte('created_at',new Date(Date.UTC(now.getUTCFullYear(),now.getUTCMonth(),1)).toISOString())]);
  if(rows.error || premium.error || jobs.error) throw new Error('Your gallery could not be loaded.');
  const media = await Promise.all((rows.data??[]).map(async row=>({ ...row, url:(await supabase.storage.from('profile-media').createSignedUrl(row.path,300)).data?.signedUrl })));
  return {media,premium:premium.data===true,used:jobs.data?.length??0};
@@ -31,8 +32,8 @@ export const convertPhoto = createServerFn({method:'POST'}).middleware([requireS
  const row=await supabaseAdmin.from('profile_media').insert({user_id:context.userId,kind:'anime_photo',path});
  if(row.error) throw new Error('The portrait could not be added to your gallery.');
  await supabaseAdmin.from('photo_jobs').update({status:'ready'}).eq('id',reserved.data).eq('user_id',context.userId);
- await context.supabase.storage.from('profile-originals').remove([data.path]);
- return {ok:true};
+ const cleanup=await context.supabase.storage.from('profile-originals').remove([data.path]);
+ return {ok:true,originalRemoved:!cleanup.error};
  } catch(error) {
  await supabaseAdmin.from('photo_jobs').update({status:'failed'}).eq('id',reserved.data).eq('user_id',context.userId);
  if(error instanceof GatewayError) { console.error('Anime conversion failed',{code:error.code,ids:error.ids}); throw new Error('Anime conversion did not finish. Your original remains private. No automatic retry was made.'); }
@@ -41,10 +42,10 @@ export const convertPhoto = createServerFn({method:'POST'}).middleware([requireS
 });
 export const addVideo=createServerFn({method:'POST'}).middleware([requireSupabaseAuth]).inputValidator(input=>z.object({path:z.string().max(300)}).parse(input)).handler(async({data,context})=>{
  const [premium,verified]=await Promise.all([context.supabase.rpc('is_premium',{_user_id:context.userId}),context.supabase.rpc('is_verified',{_user_id:context.userId})]);
- if(!premium.data || !verified.data) throw new Error('Profile videos require premium and approved identity.');
+ if(premium.error || verified.error || !premium.data || !verified.data) throw new Error('Profile videos require premium and approved identity.');
  if(!data.path.startsWith(`${context.userId}/`) || !/\.(mp4|mov)$/i.test(data.path)) throw new Error('Upload your own MP4 or MOV.');
  const file=await context.supabase.storage.from('profile-media').download(data.path);
- if(file.error || !file.data || !['video/mp4','video/quicktime'].includes(file.data.type)) throw new Error('A valid uploaded video is required.');
+ if(file.error || !file.data || file.data.size>50*1024*1024 || !['video/mp4','video/quicktime'].includes(file.data.type)) throw new Error('Use an uploaded MP4 or MOV under 50 MB.');
  const {supabaseAdmin}=await import('@/integrations/supabase/client.server');
  const result=await supabaseAdmin.from('profile_media').insert({user_id:context.userId,kind:'video',path:data.path});
  if(result.error) throw new Error('The video could not be added.'); return {ok:true};
