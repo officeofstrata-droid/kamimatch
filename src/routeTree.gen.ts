@@ -10,33 +10,64 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as CommunitiesRouteImport } from './routes/communities'
+import { Route as Top10RouteImport } from './routes/top10'
+import { Route as ApiPublicCatalogSearchRouteImport } from './routes/api/public/catalog-search'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CommunitiesRoute = CommunitiesRouteImport.update({
+  id: '/communities',
+  path: '/communities',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const Top10Route = Top10RouteImport.update({
+  id: '/top10',
+  path: '/top10',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicCatalogSearchRoute = ApiPublicCatalogSearchRouteImport.update({
+  id: '/api/public/catalog-search',
+  path: '/api/public/catalog-search',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/communities': typeof CommunitiesRoute
+  '/top10': typeof Top10Route
+  '/api/public/catalog-search': typeof ApiPublicCatalogSearchRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/communities': typeof CommunitiesRoute
+  '/top10': typeof Top10Route
+  '/api/public/catalog-search': typeof ApiPublicCatalogSearchRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/communities': typeof CommunitiesRoute
+  '/top10': typeof Top10Route
+  '/api/public/catalog-search': typeof ApiPublicCatalogSearchRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths: '/' | '/communities' | '/top10' | '/api/public/catalog-search'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '/communities' | '/top10' | '/api/public/catalog-search'
+  id:
+    '__root__' | '/' | '/communities' | '/top10' | '/api/public/catalog-search'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  CommunitiesRoute: typeof CommunitiesRoute
+  Top10Route: typeof Top10Route
+  ApiPublicCatalogSearchRoute: typeof ApiPublicCatalogSearchRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +79,35 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/communities': {
+      id: '/communities'
+      path: '/communities'
+      fullPath: '/communities'
+      preLoaderRoute: typeof CommunitiesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/top10': {
+      id: '/top10'
+      path: '/top10'
+      fullPath: '/top10'
+      preLoaderRoute: typeof Top10RouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/catalog-search': {
+      id: '/api/public/catalog-search'
+      path: '/api/public/catalog-search'
+      fullPath: '/api/public/catalog-search'
+      preLoaderRoute: typeof ApiPublicCatalogSearchRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  CommunitiesRoute: CommunitiesRoute,
+  Top10Route: Top10Route,
+  ApiPublicCatalogSearchRoute: ApiPublicCatalogSearchRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
