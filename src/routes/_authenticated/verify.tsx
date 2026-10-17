@@ -4,7 +4,7 @@ import { useServerFn } from '@tanstack/react-start';
 import { useEffect, useRef, useState } from 'react';
 import { Camera, Check, ShieldCheck, Upload } from 'lucide-react';
 import { getAccount, submitIdentity } from '@/lib/account.functions';
-import { VeriffCheck } from '@/components/VeriffCheck';
+import { DiditCheck } from '@/components/DiditCheck';
 import { AccountShell } from '@/components/AccountShell';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
@@ -63,7 +63,7 @@ function VerifyPage() {
     finally { setBusy(false); }
   }
   return <AccountShell title="A real you, behind the avatar" subtitle="Government ID + a live camera selfie. Private, reviewed, adults only.">
-    {account.details && <VeriffCheck />}
+    {account.details && <DiditCheck />}
     {!account.details ? <div className="space-y-4"><p className="text-sm">Save your profile and date of birth before starting your identity check.</p><Button asChild className="rounded-full"><Link to="/profile">Complete my profile</Link></Button></div> : pending || approved ? <div className="space-y-4 border-y border-border py-8 text-center"><ShieldCheck className="mx-auto h-12 w-12 text-primary" /><h2 className="font-display text-2xl">{approved ? 'Your identity is approved' : 'Your check is awaiting review'}</h2><p className="text-sm text-muted-foreground">{approved ? 'Your adult identity check is complete.' : 'A trusted reviewer must check your ID, date of birth and selfie before meeting is unlocked. No automatic approval.'}</p><Button asChild variant="outline" className="rounded-full"><Link to="/profile">Back to my profile</Link></Button></div> : <div className="space-y-7">
       {account.identity?.status === 'rejected' && <p role="alert" className="rounded-md bg-secondary p-3 text-sm">Please try again: {account.identity.reviewer_note}</p>}
       <section><h2 className="flex items-center gap-2 text-lg font-bold"><Upload className="text-primary" />1. Government photo ID</h2><p className="mt-2 text-xs leading-relaxed text-muted-foreground">A clear passport, driving licence or national ID showing your photograph and date of birth. Only authorised reviewers can access it.</p><label className="mt-4 block cursor-pointer rounded-lg border-2 border-dashed border-border bg-card p-5 text-center text-sm font-bold"><Upload className="mx-auto mb-2 text-primary" />{idFile ? idFile.name : 'Choose ID photo or PDF'}<input aria-label="Government ID" type="file" accept="image/jpeg,image/png,application/pdf" className="mt-3 block w-full text-xs" onChange={(e) => { const file = e.target.files?.[0]; if (!file) return; if (file.size > 10 * 1024 * 1024 || !['image/jpeg', 'image/png', 'application/pdf'].includes(file.type)) { setError('Use a JPG, PNG or PDF under 10 MB.'); return; } setIdFile(file); setError(''); }} /></label></section>
