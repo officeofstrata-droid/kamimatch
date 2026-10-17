@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useRef, useState } from "react";
 import { Heart, X, Star, RotateCcw, ShieldCheck, Flame, MessageCircle, User, Sparkles, Tv } from "lucide-react";
 import ren from "@/assets/char-ren.jpg";
@@ -20,6 +20,24 @@ export const Route = createFileRoute("/")({
 });
 
 type Profile = { name: string; age: number; img: string; archetype: string; match: number; watching: string; tags: string[]; why: string };
+
+const ARCHETYPE_NOTES: Record<string, string> = {
+  Tsundere: "acts tough or cold, but is secretly soft and caring",
+  Kuudere: "calm, quiet and hard to read, but thoughtful underneath",
+  Genki: "bubbly, loud and full of energy all the time",
+};
+
+const TAG_NOTES: Record<string, string> = {
+  "Slow burn": "romance builds slowly",
+  "Enemies to lovers": "haters who fall for each other",
+  "Steins;Gate": "a time-travel thriller",
+  "Psych thriller": "dark, tense mind games",
+  "Found family": "friends become each other's family",
+  "Death Note": "a battle of wits",
+  "Sports anime": "training, teams, big wins",
+  Rivals: "they compete, then grow closer",
+  Isekai: "pulled into another world",
+};
 
 const PROFILES: Profile[] = [
   { name: "Aiko", age: 24, img: aiko, archetype: "Tsundere", match: 92, watching: "Frieren S2", tags: ["Slow burn", "Enemies to lovers", "Steins;Gate"], why: "It's not like I wanted you to swipe right or anything…" },
@@ -76,11 +94,20 @@ function SwipeCard({ p, top, onSwipe }: { p: Profile; top: boolean; onSwipe: (di
         <h2 className="font-display text-4xl">
           {p.name} <span className="font-sans text-2xl font-normal">{p.age}</span>
         </h2>
-        <p className="mt-1 text-sm font-bold opacity-90">{p.archetype} · <Tv className="inline h-3.5 w-3.5" /> Watching {p.watching}</p>
-        <p className="mt-2 text-sm opacity-90">{p.why}</p>
+        <p className="ink-shadow mt-1 text-sm font-bold opacity-100">
+          {p.archetype}
+          {ARCHETYPE_NOTES[p.archetype] && (
+            <span className="text-xs font-medium opacity-90"> ({ARCHETYPE_NOTES[p.archetype]})</span>
+          )}
+        </p>
+        <p className="ink-shadow text-xs font-semibold opacity-80"><Tv className="inline h-3.5 w-3.5" /> Watching {p.watching}</p>
+        <p className="ink-shadow mt-2 text-sm opacity-90">{p.why}</p>
         <div className="mt-3 flex flex-wrap gap-1.5">
           {p.tags.map((t) => (
-            <span key={t} className="rounded-full border border-primary-foreground/40 bg-primary-foreground/15 px-2.5 py-1 text-xs font-bold backdrop-blur">{t}</span>
+            <span key={t} className="ink-shadow rounded-full border border-primary-foreground/40 bg-primary-foreground/15 px-2.5 py-1 text-xs font-bold backdrop-blur">
+              {t}
+              {TAG_NOTES[t] && <span className="font-medium opacity-75"> ({TAG_NOTES[t]})</span>}
+            </span>
           ))}
         </div>
       </div>
@@ -114,6 +141,12 @@ function Index() {
           </div>
           <button aria-label="Messages" className="rounded-full p-2 text-muted-foreground hover:bg-secondary"><MessageCircle className="h-6 w-6" /></button>
         </header>
+
+        <nav className="mb-3 flex gap-2">
+          <span className="flex-1 rounded-full bg-brand py-2 text-center text-xs font-extrabold text-primary-foreground">Discover</span>
+          <Link to="/communities" className="flex-1 rounded-full border-2 border-border bg-card py-2 text-center text-xs font-extrabold text-muted-foreground transition hover:border-primary hover:text-primary">Communities</Link>
+          <Link to="/top10" className="flex-1 rounded-full border-2 border-border bg-card py-2 text-center text-xs font-extrabold text-muted-foreground transition hover:border-primary hover:text-primary">Top 10</Link>
+        </nav>
 
         <p className="mb-3 rounded-full bg-secondary px-4 py-1.5 text-center text-xs font-bold text-secondary-foreground">
           ✿ 18+ only — every profile is ID verified
@@ -155,7 +188,15 @@ function Index() {
           <p className="pop-in font-display text-6xl text-brand">運命!</p>
           <h2 className="pop-in mt-2 font-display text-4xl">It's a Match!</h2>
           <img src={matched.img} alt={matched.name} width={768} height={1024} className="pop-in mt-6 h-40 w-40 rounded-full border-4 border-primary object-cover" />
-          <p className="mt-4 max-w-xs text-sm opacity-90">{matched.match}% — you both love {matched.tags.join(", ")}.</p>
+          <p className="mt-4 max-w-xs text-sm opacity-90">{matched.match}% — you both love:</p>
+          <div className="mt-3 flex max-w-xs flex-wrap justify-center gap-1.5">
+            {matched.tags.map((t) => (
+              <span key={t} className="rounded-full border border-primary-foreground/40 bg-primary-foreground/15 px-2.5 py-1 text-xs font-bold">
+                {t}
+                {TAG_NOTES[t] && <span className="font-medium opacity-75"> ({TAG_NOTES[t]})</span>}
+              </span>
+            ))}
+          </div>
           <button className="mt-6 rounded-full bg-brand px-8 py-3 font-extrabold shadow-card">Send an icebreaker</button>
           <button className="mt-3 text-sm opacity-80">Keep swiping</button>
         </div>

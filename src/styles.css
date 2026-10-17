@@ -97,7 +97,7 @@
   --chart-1: oklch(0.66 0.22 5);--chart-2: oklch(0.75 0.17 40);--chart-3: oklch(0.82 0.13 160);--chart-4: oklch(0.7 0.15 240);--chart-5: oklch(0.7 0.15 300);
   --sidebar: oklch(1 0 0);--sidebar-foreground: oklch(0.25 0.05 350);--sidebar-primary: oklch(0.66 0.22 5);--sidebar-primary-foreground: oklch(1 0 0);--sidebar-accent: oklch(0.94 0.02 350);--sidebar-accent-foreground: oklch(0.25 0.05 350);--sidebar-border: oklch(0.9 0.03 350);--sidebar-ring: oklch(0.66 0.22 5);
   --gradient-brand: linear-gradient(135deg, var(--primary), var(--primary-glow));
-  --gradient-shade: linear-gradient(to top, oklch(0.15 0.04 350 / 0.9), oklch(0.15 0.04 350 / 0.35) 45%, transparent 70%);
+  --gradient-shade: linear-gradient(to top, oklch(0.15 0.04 350 / 0.96), oklch(0.15 0.04 350 / 0.78) 62%, transparent 92%);
   --shadow-card: 0 20px 50px -15px color-mix(in oklab, var(--primary) 45%, transparent);
 }
 
@@ -116,6 +116,7 @@
 @utility bg-brand { background-image: var(--gradient-brand); }
 @utility text-brand { background-image: var(--gradient-brand); background-clip: text; color: transparent; }
 @utility bg-shade { background-image: var(--gradient-shade); }
+@utility ink-shadow { text-shadow: 0 1px 4px oklch(0.15 0.04 350 / 0.85); }
 @utility shadow-card { box-shadow: var(--shadow-card); }
 @utility sakura-sky { background: radial-gradient(circle at 20% 10%, color-mix(in oklab, var(--primary) 18%, transparent), transparent 40%), radial-gradient(circle at 90% 80%, color-mix(in oklab, var(--primary-glow) 18%, transparent), transparent 45%), var(--background); }
 @keyframes petal { 0% { transform: translate(0,-10vh) rotate(0); opacity:0 } 10%{opacity:.9} 100% { transform: translate(-25vw,110vh) rotate(600deg); opacity:0 } }
