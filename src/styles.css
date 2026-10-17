@@ -19,8 +19,8 @@
  */
 
 @theme inline {
-  --font-display: "Shippori Mincho", serif;
-  --font-sans: "Zen Kaku Gothic New", system-ui, sans-serif;
+  --font-display: "Dela Gothic One", sans-serif;
+  --font-sans: "M PLUS Rounded 1c", system-ui, sans-serif;
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
@@ -42,6 +42,7 @@
   --color-muted-foreground: var(--muted-foreground);
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
+  --color-ink: var(--ink);
   --color-destructive: var(--destructive);
   --color-destructive-foreground: var(--destructive-foreground);
   --color-border: var(--border);
@@ -64,30 +65,29 @@
 }
 
 :root {
-  --radius: 1rem;
-  --background: oklch(0.14 0.03 290);
-  --foreground: oklch(0.96 0.01 320);
-  --card: oklch(0.19 0.04 290);
-  --card-foreground: oklch(0.96 0.01 320);
-  --popover: oklch(0.19 0.04 290);
-  --popover-foreground: oklch(0.96 0.01 320);
-  --primary: oklch(0.72 0.2 350);
-  --primary-foreground: oklch(0.14 0.03 290);
-  --secondary: oklch(0.82 0.13 200);
-  --secondary-foreground: oklch(0.14 0.03 290);
-  --muted: oklch(0.24 0.04 290);
-  --muted-foreground: oklch(0.72 0.04 300);
-  --accent: oklch(0.62 0.2 300);
-  --accent-foreground: oklch(0.98 0 0);
+  --radius: 0.75rem;
+  --background: oklch(0.16 0.04 285);
+  --foreground: oklch(0.98 0.01 90);
+  --card: oklch(0.97 0.02 90);
+  --card-foreground: oklch(0.16 0.04 285);
+  --popover: oklch(0.2 0.05 285);
+  --popover-foreground: oklch(0.98 0.01 90);
+  --primary: oklch(0.68 0.27 355);
+  --primary-foreground: oklch(0.99 0 0);
+  --secondary: oklch(0.85 0.15 205);
+  --secondary-foreground: oklch(0.16 0.04 285);
+  --muted: oklch(0.24 0.05 285);
+  --muted-foreground: oklch(0.78 0.04 290);
+  --accent: oklch(0.9 0.18 100);
+  --accent-foreground: oklch(0.16 0.04 285);
+  --ink: oklch(0.12 0.03 285);
   --destructive: oklch(0.65 0.22 25);
   --destructive-foreground: oklch(0.98 0 0);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 14%);
-  --ring: oklch(0.72 0.2 350);
-  --chart-1: oklch(0.72 0.2 350);--chart-2: oklch(0.82 0.13 200);--chart-3: oklch(0.62 0.2 300);--chart-4: oklch(0.8 0.15 80);--chart-5: oklch(0.7 0.15 150);
-  --sidebar: oklch(0.17 0.03 290);--sidebar-foreground: oklch(0.96 0.01 320);--sidebar-primary: oklch(0.72 0.2 350);--sidebar-primary-foreground: oklch(0.14 0.03 290);--sidebar-accent: oklch(0.24 0.04 290);--sidebar-accent-foreground: oklch(0.96 0.01 320);--sidebar-border: oklch(1 0 0 / 10%);--sidebar-ring: oklch(0.72 0.2 350);
-  --gradient-neon: linear-gradient(120deg, var(--primary), var(--accent), var(--secondary));
-  --shadow-glow: 0 0 40px -8px color-mix(in oklab, var(--primary) 60%, transparent);
+  --border: oklch(1 0 0 / 14%);
+  --input: oklch(1 0 0 / 18%);
+  --ring: oklch(0.68 0.27 355);
+  --chart-1: oklch(0.68 0.27 355);--chart-2: oklch(0.85 0.15 205);--chart-3: oklch(0.9 0.18 100);--chart-4: oklch(0.65 0.22 300);--chart-5: oklch(0.7 0.15 150);
+  --sidebar: oklch(0.18 0.04 285);--sidebar-foreground: oklch(0.98 0.01 90);--sidebar-primary: oklch(0.68 0.27 355);--sidebar-primary-foreground: oklch(0.99 0 0);--sidebar-accent: oklch(0.24 0.05 285);--sidebar-accent-foreground: oklch(0.98 0.01 90);--sidebar-border: oklch(1 0 0 / 14%);--sidebar-ring: oklch(0.68 0.27 355);
 }
 
 @layer base {
@@ -101,8 +101,17 @@
   }
 }
 
-@utility text-neon { background-image: var(--gradient-neon); background-clip: text; color: transparent; }
-@utility bg-neon { background-image: var(--gradient-neon); }
-@utility shadow-glow { box-shadow: var(--shadow-glow); }
-@keyframes petal { 0% { transform: translate(0,-10vh) rotate(0); opacity:0 } 10%{opacity:.8} 100% { transform: translate(-20vw,110vh) rotate(540deg); opacity:0 } }
-@utility petal { position:absolute; top:0; width:12px; height:10px; border-radius:80% 0 80% 0; background: color-mix(in oklab, var(--primary) 70%, white); animation: petal linear infinite; pointer-events:none; }
+/* Manga pop utilities */
+@utility halftone { background-image: radial-gradient(color-mix(in oklab, var(--primary) 45%, transparent) 1.2px, transparent 1.6px); background-size: 14px 14px; }
+@utility speedlines { background-image: repeating-conic-gradient(from 0deg at 50% 50%, color-mix(in oklab, var(--accent) 22%, transparent) 0deg 2deg, transparent 2deg 9deg); }
+@utility panel { border: 3px solid var(--ink); border-radius: var(--radius); box-shadow: 6px 6px 0 var(--ink); }
+@utility pop-shadow { box-shadow: 5px 5px 0 var(--ink); }
+@utility pop-press { transition: transform .12s, box-shadow .12s; &:hover { transform: translate(-2px,-2px); box-shadow: 8px 8px 0 var(--ink); } &:active { transform: translate(3px,3px); box-shadow: 2px 2px 0 var(--ink); } }
+@utility text-outline { -webkit-text-stroke: 2px var(--ink); paint-order: stroke fill; }
+@utility text-pop { text-shadow: 4px 4px 0 var(--primary), 8px 8px 0 var(--ink); }
+@keyframes petal { 0% { transform: translate(0,-10vh) rotate(0); opacity:0 } 10%{opacity:.9} 100% { transform: translate(-25vw,110vh) rotate(600deg); opacity:0 } }
+@utility petal { position:absolute; top:0; width:14px; height:11px; border-radius:80% 0 80% 0; background: color-mix(in oklab, var(--primary) 55%, white); animation: petal linear infinite; pointer-events:none; }
+@keyframes marquee { to { transform: translateX(-50%); } }
+@utility marquee { animation: marquee 22s linear infinite; }
+@keyframes wobble { 0%,100% { transform: rotate(-3deg) } 50% { transform: rotate(3deg) scale(1.05) } }
+@utility wobble { animation: wobble 2.4s ease-in-out infinite; }
