@@ -23,6 +23,7 @@ import { Route as AuthenticatedMessagesIndexRouteImport } from './routes/_authen
 import { Route as AuthenticatedMessagesIdRouteImport } from './routes/_authenticated/messages.$id'
 import { Route as AuthenticatedRoomsIdRouteImport } from './routes/_authenticated/rooms.$id'
 import { Route as ApiPublicCatalogSearchRouteImport } from './routes/api/public/catalog-search'
+import { Route as ApiPublicVeriffWebhookRouteImport } from './routes/api/public/veriff-webhook'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -94,6 +95,11 @@ const ApiPublicCatalogSearchRoute = ApiPublicCatalogSearchRouteImport.update({
   path: '/api/public/catalog-search',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicVeriffWebhookRoute = ApiPublicVeriffWebhookRouteImport.update({
+  id: '/api/public/veriff-webhook',
+  path: '/api/public/veriff-webhook',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -108,6 +114,7 @@ export interface FileRoutesByFullPath {
   '/messages/$id': typeof AuthenticatedMessagesIdRoute
   '/rooms/$id': typeof AuthenticatedRoomsIdRoute
   '/api/public/catalog-search': typeof ApiPublicCatalogSearchRoute
+  '/api/public/veriff-webhook': typeof ApiPublicVeriffWebhookRoute
   '/messages/': typeof AuthenticatedMessagesIndexRoute
 }
 export interface FileRoutesByTo {
@@ -123,6 +130,7 @@ export interface FileRoutesByTo {
   '/messages/$id': typeof AuthenticatedMessagesIdRoute
   '/rooms/$id': typeof AuthenticatedRoomsIdRoute
   '/api/public/catalog-search': typeof ApiPublicCatalogSearchRoute
+  '/api/public/veriff-webhook': typeof ApiPublicVeriffWebhookRoute
   '/messages': typeof AuthenticatedMessagesIndexRoute
 }
 export interface FileRoutesById {
@@ -140,6 +148,7 @@ export interface FileRoutesById {
   '/_authenticated/messages/$id': typeof AuthenticatedMessagesIdRoute
   '/_authenticated/rooms/$id': typeof AuthenticatedRoomsIdRoute
   '/api/public/catalog-search': typeof ApiPublicCatalogSearchRoute
+  '/api/public/veriff-webhook': typeof ApiPublicVeriffWebhookRoute
   '/_authenticated/messages/': typeof AuthenticatedMessagesIndexRoute
 }
 export interface FileRouteTypes {
@@ -157,6 +166,7 @@ export interface FileRouteTypes {
     | '/messages/$id'
     | '/rooms/$id'
     | '/api/public/catalog-search'
+    | '/api/public/veriff-webhook'
     | '/messages/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -172,6 +182,7 @@ export interface FileRouteTypes {
     | '/messages/$id'
     | '/rooms/$id'
     | '/api/public/catalog-search'
+    | '/api/public/veriff-webhook'
     | '/messages'
   id:
     | '__root__'
@@ -188,6 +199,7 @@ export interface FileRouteTypes {
     | '/_authenticated/messages/$id'
     | '/_authenticated/rooms/$id'
     | '/api/public/catalog-search'
+    | '/api/public/veriff-webhook'
     | '/_authenticated/messages/'
   fileRoutesById: FileRoutesById
 }
@@ -198,6 +210,7 @@ export interface RootRouteChildren {
   CommunitiesRoute: typeof CommunitiesRoute
   Top10Route: typeof Top10Route
   ApiPublicCatalogSearchRoute: typeof ApiPublicCatalogSearchRoute
+  ApiPublicVeriffWebhookRoute: typeof ApiPublicVeriffWebhookRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -300,6 +313,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicCatalogSearchRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/veriff-webhook': {
+      id: '/api/public/veriff-webhook'
+      path: '/api/public/veriff-webhook'
+      fullPath: '/api/public/veriff-webhook'
+      preLoaderRoute: typeof ApiPublicVeriffWebhookRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -335,6 +355,7 @@ const rootRouteChildren: RootRouteChildren = {
   CommunitiesRoute: CommunitiesRoute,
   Top10Route: Top10Route,
   ApiPublicCatalogSearchRoute: ApiPublicCatalogSearchRoute,
+  ApiPublicVeriffWebhookRoute: ApiPublicVeriffWebhookRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
