@@ -21,7 +21,7 @@ export const startDidit=createServerFn({method:'POST'}).middleware([requireSupab
  const {supabaseAdmin}=await import('@/integrations/supabase/client.server');
  const record=await supabaseAdmin.from('verification_sessions').insert({user_id:context.userId,provider:'didit',workflow_id:workflow}).select('id').single();if(record.error||!record.data)throw new Error('Could not start your identity check.');
  try{
- const response=await fetch('https://verification.didit.me/v3/session/',{method:'POST',headers:{'x-api-key':apiKey,'Content-Type':'application/json'},body:JSON.stringify({workflow_id:workflow,vendor_data:record.data.id,callback:`${new URL(getRequest().url).origin}/verify`,callback_method:'redirect',expected_details:{date_of_birth:details.data.birth_date}})});
+ const response=await fetch('https://verification.didit.me/v3/session/',{method:'POST',headers:{'x-api-key':apiKey,'Content-Type':'application/json'},body:JSON.stringify({workflow_id:workflow,vendor_data:record.data.id,callback:`${new URL(getRequest().url).origin}/verify`,callback_method:'both',expected_details:{date_of_birth:details.data.birth_date}})});
  if(!response.ok)throw new Error(`Didit could not start your check (${response.status}). Check your Didit account configuration.`);
  const payload=z.object({session_id:z.string().uuid(),url:z.string().url()}).parse(await response.json());const hosted=diditHostedUrl(payload.url);
  const save=await supabaseAdmin.from('verification_sessions').update({provider_session_id:payload.session_id,hosted_url:hosted,status:'pending'}).eq('id',record.data.id).eq('user_id',context.userId);

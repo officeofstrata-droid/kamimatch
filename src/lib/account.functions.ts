@@ -5,15 +5,16 @@ import { ageOn, canReview, preferencesSchema, profileSchema } from '@/lib/accoun
 
 export const getAccount = createServerFn({ method: 'GET' }).middleware([requireSupabaseAuth]).handler(async ({ context }) => {
   const { supabase, userId } = context;
-  const [profile, details, identity, preferences, role] = await Promise.all([
+  const [profile, details, identity, preferences, role, verified] = await Promise.all([
     supabase.from('profiles').select('*').eq('id', userId).maybeSingle(),
     supabase.from('account_details').select('birth_date').eq('user_id', userId).maybeSingle(),
     supabase.from('identity_submissions').select('id,status,reviewer_note,submitted_at').eq('user_id', userId).order('submitted_at', { ascending: false }).limit(1).maybeSingle(),
     supabase.from('anime_preferences').select('*').eq('user_id', userId).maybeSingle(),
     supabase.rpc('has_role', { _user_id: userId, _role: 'admin' }),
+    supabase.rpc('is_verified', { _user_id: userId }),
   ]);
-  for (const result of [profile, details, identity, preferences, role]) if (result.error) throw new Error('Your account could not be loaded. Please try again.');
-  return { profile: profile.data, details: details.data, identity: identity.data, preferences: preferences.data, isAdmin: role.data === true, userId };
+  for (const result of [profile, details, identity, preferences, role, verified]) if (result.error) throw new Error('Your account could not be loaded. Please try again.');
+  return { profile: profile.data, details: details.data, identity: identity.data, preferences: preferences.data, isAdmin: role.data === true, verified: verified.data === true, userId };
 });
 
 export const saveProfile = createServerFn({ method: 'POST' }).middleware([requireSupabaseAuth]).inputValidator((input) => profileSchema.parse(input)).handler(async ({ data, context }) => {

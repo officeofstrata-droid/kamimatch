@@ -30,7 +30,7 @@ function VerifyPage() {
   const video = useRef<HTMLVideoElement>(null);
   const stream = useRef<MediaStream | null>(null);
   const pending = account.identity?.status === 'pending';
-  const approved = account.identity?.status === 'approved';
+  const approved = account.verified;
   useEffect(() => () => { stream.current?.getTracks().forEach((track) => track.stop()); }, []);
   useEffect(() => { if (cameraOn && video.current && stream.current) video.current.srcObject = stream.current; }, [cameraOn]);
   useEffect(() => { if (!selfie) return; const url = URL.createObjectURL(selfie); setSelfieUrl(url); return () => URL.revokeObjectURL(url); }, [selfie]);

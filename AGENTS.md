@@ -14,3 +14,6 @@
 - Keep birth dates and identity documents separate from discoverable profiles; private storage uses owner-folder policies and short-lived reviewer URLs.
 - Never bootstrap administrator privileges from signup order or user metadata; assign a trusted reviewer explicitly and prohibit self-review.
 - SessionProvider owns the sole auth state listener; sign-out cancels and clears cached account data before navigating to `/auth`.
+- Keep dating, communities and media in dedicated authenticated server-function modules; database policies independently enforce verification, ownership and entitlements.
+- Provider sessions bind an opaque local session ID to the provider session and workflow; only signed live full-payload decisions with passed document, liveness, face match and matching adult DOB may approve.
+- Use the database is_verified result for all eligibility displays and capabilities, not manual-submission status, because provider approval is independent of manual review.

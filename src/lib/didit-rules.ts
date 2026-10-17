@@ -8,7 +8,7 @@ export function diditAdultApproved(decision:unknown,accountDob:string,today=new 
  const birth=new Date(`${accountDob}T00:00:00Z`);
  return d.status==='Approved'&&d.environment==='live'&&age>=18&&age<=120&&!Number.isNaN(birth.getTime())&&birth.toISOString().slice(0,10)===accountDob
  &&d.id_verifications.length>0&&d.id_verifications.every(x=>x.status==='Approved'&&(x.verification_method===undefined||x.verification_method==='document')&&x.date_of_birth===accountDob)
- &&d.liveness_checks.length>0&&d.liveness_checks.every(x=>x.status==='Approved'&&['PASSIVE','ACTIVE','ACTIVE_3D'].includes(x.method))
+ &&d.liveness_checks.length>0&&d.liveness_checks.every(x=>x.status==='Approved'&&['PASSIVE','FLASHING','ACTIVE_3D'].includes(x.method))
  &&d.face_matches.length>0&&d.face_matches.every(x=>x.status==='Approved');
 }
 export function canonicalDiditJson(value:unknown):string{
