@@ -1,10 +1,12 @@
 # WaifuMatch completion roadmap
 
 ## Stage 1 — Real accounts and safety
-- [ ] Google and Lovable sign-in, session-aware navigation and sign-out
-- [ ] Adult profile onboarding and account-saved Anime DNA
-- [ ] Private government ID upload and live camera selfie submission
-- [ ] Restricted reviewer queue and verified-only meeting eligibility
+- [x] Google and Lovable sign-in configured, session-aware navigation and sign-out implemented
+- [x] Adult profile onboarding and account-saved Anime DNA implemented
+- [x] Private government ID upload and live camera selfie submission implemented
+- [x] Restricted reviewer queue and meeting eligibility helper implemented (dating endpoints must enforce it in Stage 2)
+- [ ] Authenticated end-to-end verification — blocked: no signed-up account exists; requesting user must sign in
+- [ ] Enable trusted reviewer — blocked: owner must identify a reviewer account; no automatic admin assignment
 
 ## Stage 2 — Dating
 - [ ] Real discovery, compatibility breakdown, daily pull and blind dates
@@ -19,6 +21,9 @@
 - [x] Sakura swipe UI, anime catalogue search, communities preview and Top 10 picker
 
 ## Safety and release blockers
+- Public browser checks passed: sign-in age checkbox, signed-out account redirect, guest favourites save/reload, phone-width layouts; eight tests passed and latest build OK.
+- Signed-in profile saving, file submission, review decisions and provider login completion remain unverified until an account exists.
+- Complete Stage 2 and Stage 3 after the signed-in Stage 1 checks; these are not shipped yet.
 - No account becomes a reviewer automatically; the owner must name the trusted reviewer account.
 - Manual verification is not automated identity/liveness certification; a verification service is needed for automated checks.
 - Sample profiles and community counts are not real people or live rooms.
