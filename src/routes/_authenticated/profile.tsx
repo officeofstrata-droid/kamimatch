@@ -56,6 +56,6 @@ function ProfilePage() {
       <Button type="submit" disabled={busy} className="h-12 w-full rounded-full bg-brand font-bold">{busy ? 'Saving…' : 'Save my profile'}</Button>
     </form>
     {account.profile && <ProfileGallery verified={account.verified} />}
-    <div className="mt-6 space-y-3"><Button asChild variant="outline" className="h-12 w-full rounded-full"><Link to="/top10"><Sparkles />Choose my top 10</Link></Button><Button asChild disabled={!account.details} className="h-12 w-full rounded-full"><Link to="/verify"><ShieldCheck />Verify my identity</Link></Button>{account.isAdmin && <Button asChild variant="outline" className="w-full"><Link to="/review">Identity review queue</Link></Button>}<Button onClick={signOut} variant="ghost" className="w-full text-muted-foreground"><LogOut />Sign out</Button></div>
+    <div className="mt-6 space-y-3"><Button asChild variant="outline" className="h-12 w-full rounded-full"><Link to="/top10"><Sparkles />Choose my top 10</Link></Button><Button asChild disabled={!account.details} className="h-12 w-full rounded-full"><Link to="/verify"><ShieldCheck />Verify my identity</Link></Button>{account.isAdmin && <><Button asChild variant="outline" className="w-full"><Link to="/review">Identity review queue</Link></Button><Button asChild variant="outline" className="w-full"><Link to="/reports">Safety reports</Link></Button></>}<Button onClick={signOut} variant="ghost" className="w-full text-muted-foreground"><LogOut />Sign out</Button></div>
   </AccountShell>;
 }
