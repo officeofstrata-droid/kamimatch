@@ -1,6 +1,7 @@
 # WaifuMatch completion roadmap
 
 ## Current completion pass
+- [ ] Finish remaining app preparation after checkout and report owner-only activation steps
 - [ ] Enable Stripe test payments, create Premium subscription and wire checkout; live payments require owner account claim
 - [ ] Confirm purchase/upgrade rules and implement paid activation plus paid-through cancellation
 - [ ] Finish moderation report queue and daily soulmate selection
