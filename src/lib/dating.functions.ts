@@ -10,11 +10,15 @@ export const getDating=createServerFn({method:'GET'}).middleware([requireSupabas
  if(!verified.data) return {verified:false,premium:premium.data===true,profiles:[]};
  const seen=new Set((swipes.data??[]).map(row=>row.target_id));
  const candidates=await Promise.all((profiles.data??[]).filter(row=>!seen.has(row.id)).map(async row=>{
+ const eligible=await supabase.rpc('is_verified',{_user_id:row.id});
+ if(eligible.error)throw new Error('Member eligibility could not be checked.');
+ if(!eligible.data)return null;
  const [taste,media]=await Promise.all([supabase.from('anime_preferences').select('*').eq('user_id',row.id).maybeSingle(),supabase.from('profile_media').select('path,kind').eq('user_id',row.id).order('created_at').limit(5)]);
+ if(taste.error||media.error)throw new Error('Member details could not be loaded.');
  const photos=await Promise.all((media.data??[]).filter(x=>x.kind==='anime_photo').map(async x=>(await supabase.storage.from('profile-media').createSignedUrl(x.path,300)).data?.signedUrl));
  return {...row,photos:photos.filter((x):x is string=>!!x),...compatibility(own.data,taste.data)};
  }));
- return {verified:true,premium:premium.data===true,profiles:candidates.sort((a,b)=>b.score-a.score)};
+ return {verified:true,premium:premium.data===true,profiles:candidates.filter((row):row is NonNullable<typeof row>=>row!==null).sort((a,b)=>b.score-a.score)};
 });
 export const swipeMember=createServerFn({method:'POST'}).middleware([requireSupabaseAuth]).inputValidator(input=>z.object({target:z.string().uuid(),choice:z.enum(['like','pass','super'])}).parse(input)).handler(async({data,context})=>{
  const result=await context.supabase.rpc('cast_swipe',{_target:data.target,_choice:data.choice});
@@ -53,6 +57,7 @@ export const reportMember=createServerFn({method:'POST'}).middleware([requireSup
 });
 export const getLikes=createServerFn({method:'GET'}).middleware([requireSupabaseAuth]).handler(async({context})=>{
  const premium=await context.supabase.rpc('is_premium',{_user_id:context.userId});
+ if(premium.error)throw new Error('Premium status could not be checked.');
  if(!premium.data) return {premium:false,people:[]};
  const rows=await context.supabase.from('swipes').select('actor_id').eq('target_id',context.userId).in('choice',['like','super']).limit(100);
  if(rows.error) throw new Error('Likes could not be loaded.');
@@ -60,7 +65,7 @@ export const getLikes=createServerFn({method:'GET'}).middleware([requireSupabase
  return {premium:true,people:people.filter((x):x is NonNullable<typeof x>=>!!x)};
 });
 export const getReports=createServerFn({method:'GET'}).middleware([requireSupabaseAuth]).handler(async({context})=>{
- const role=await context.supabase.rpc('has_role',{_user_id:context.userId,_role:'admin'});if(!role.data) throw new Error('Reviewer access required.');
+ const role=await context.supabase.rpc('has_role',{_user_id:context.userId,_role:'admin'});if(role.error||!role.data) throw new Error('Reviewer access required.');
  const reports=await context.supabase.from('reports').select('*').eq('status','open').order('created_at'); if(reports.error) throw new Error('Reports could not be loaded.');return reports.data;
 });
 export const closeReport=createServerFn({method:'POST'}).middleware([requireSupabaseAuth]).inputValidator(input=>z.object({id:z.string().uuid()}).parse(input)).handler(async({data,context})=>{
