@@ -15,11 +15,13 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as CommunitiesRouteImport } from './routes/communities'
 import { Route as Top10RouteImport } from './routes/top10'
 import { Route as AuthenticatedLikesRouteImport } from './routes/_authenticated/likes'
-import { Route as AuthenticatedMessagesRouteImport } from './routes/_authenticated/messages'
 import { Route as AuthenticatedPremiumRouteImport } from './routes/_authenticated/premium'
 import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
 import { Route as AuthenticatedReviewRouteImport } from './routes/_authenticated/review'
 import { Route as AuthenticatedVerifyRouteImport } from './routes/_authenticated/verify'
+import { Route as AuthenticatedMessagesIndexRouteImport } from './routes/_authenticated/messages.index'
+import { Route as AuthenticatedMessagesIdRouteImport } from './routes/_authenticated/messages.$id'
+import { Route as AuthenticatedRoomsIdRouteImport } from './routes/_authenticated/rooms.$id'
 import { Route as ApiPublicCatalogSearchRouteImport } from './routes/api/public/catalog-search'
 
 const IndexRoute = IndexRouteImport.update({
@@ -51,11 +53,6 @@ const AuthenticatedLikesRoute = AuthenticatedLikesRouteImport.update({
   path: '/likes',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const AuthenticatedMessagesRoute = AuthenticatedMessagesRouteImport.update({
-  id: '/messages',
-  path: '/messages',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
 const AuthenticatedPremiumRoute = AuthenticatedPremiumRouteImport.update({
   id: '/premium',
   path: '/premium',
@@ -76,6 +73,22 @@ const AuthenticatedVerifyRoute = AuthenticatedVerifyRouteImport.update({
   path: '/verify',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedMessagesIndexRoute =
+  AuthenticatedMessagesIndexRouteImport.update({
+    id: '/messages/',
+    path: '/messages/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedMessagesIdRoute = AuthenticatedMessagesIdRouteImport.update({
+  id: '/messages/$id',
+  path: '/messages/$id',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedRoomsIdRoute = AuthenticatedRoomsIdRouteImport.update({
+  id: '/rooms/$id',
+  path: '/rooms/$id',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const ApiPublicCatalogSearchRoute = ApiPublicCatalogSearchRouteImport.update({
   id: '/api/public/catalog-search',
   path: '/api/public/catalog-search',
@@ -88,12 +101,14 @@ export interface FileRoutesByFullPath {
   '/communities': typeof CommunitiesRoute
   '/top10': typeof Top10Route
   '/likes': typeof AuthenticatedLikesRoute
-  '/messages': typeof AuthenticatedMessagesRoute
   '/premium': typeof AuthenticatedPremiumRoute
   '/profile': typeof AuthenticatedProfileRoute
   '/review': typeof AuthenticatedReviewRoute
   '/verify': typeof AuthenticatedVerifyRoute
+  '/messages/$id': typeof AuthenticatedMessagesIdRoute
+  '/rooms/$id': typeof AuthenticatedRoomsIdRoute
   '/api/public/catalog-search': typeof ApiPublicCatalogSearchRoute
+  '/messages/': typeof AuthenticatedMessagesIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -101,12 +116,14 @@ export interface FileRoutesByTo {
   '/communities': typeof CommunitiesRoute
   '/top10': typeof Top10Route
   '/likes': typeof AuthenticatedLikesRoute
-  '/messages': typeof AuthenticatedMessagesRoute
   '/premium': typeof AuthenticatedPremiumRoute
   '/profile': typeof AuthenticatedProfileRoute
   '/review': typeof AuthenticatedReviewRoute
   '/verify': typeof AuthenticatedVerifyRoute
+  '/messages/$id': typeof AuthenticatedMessagesIdRoute
+  '/rooms/$id': typeof AuthenticatedRoomsIdRoute
   '/api/public/catalog-search': typeof ApiPublicCatalogSearchRoute
+  '/messages': typeof AuthenticatedMessagesIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -116,12 +133,14 @@ export interface FileRoutesById {
   '/communities': typeof CommunitiesRoute
   '/top10': typeof Top10Route
   '/_authenticated/likes': typeof AuthenticatedLikesRoute
-  '/_authenticated/messages': typeof AuthenticatedMessagesRoute
   '/_authenticated/premium': typeof AuthenticatedPremiumRoute
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
   '/_authenticated/review': typeof AuthenticatedReviewRoute
   '/_authenticated/verify': typeof AuthenticatedVerifyRoute
+  '/_authenticated/messages/$id': typeof AuthenticatedMessagesIdRoute
+  '/_authenticated/rooms/$id': typeof AuthenticatedRoomsIdRoute
   '/api/public/catalog-search': typeof ApiPublicCatalogSearchRoute
+  '/_authenticated/messages/': typeof AuthenticatedMessagesIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -131,12 +150,14 @@ export interface FileRouteTypes {
     | '/communities'
     | '/top10'
     | '/likes'
-    | '/messages'
     | '/premium'
     | '/profile'
     | '/review'
     | '/verify'
+    | '/messages/$id'
+    | '/rooms/$id'
     | '/api/public/catalog-search'
+    | '/messages/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -144,12 +165,14 @@ export interface FileRouteTypes {
     | '/communities'
     | '/top10'
     | '/likes'
-    | '/messages'
     | '/premium'
     | '/profile'
     | '/review'
     | '/verify'
+    | '/messages/$id'
+    | '/rooms/$id'
     | '/api/public/catalog-search'
+    | '/messages'
   id:
     | '__root__'
     | '/'
@@ -158,12 +181,14 @@ export interface FileRouteTypes {
     | '/communities'
     | '/top10'
     | '/_authenticated/likes'
-    | '/_authenticated/messages'
     | '/_authenticated/premium'
     | '/_authenticated/profile'
     | '/_authenticated/review'
     | '/_authenticated/verify'
+    | '/_authenticated/messages/$id'
+    | '/_authenticated/rooms/$id'
     | '/api/public/catalog-search'
+    | '/_authenticated/messages/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -219,13 +244,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedLikesRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/messages': {
-      id: '/_authenticated/messages'
-      path: '/messages'
-      fullPath: '/messages'
-      preLoaderRoute: typeof AuthenticatedMessagesRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
     '/_authenticated/premium': {
       id: '/_authenticated/premium'
       path: '/premium'
@@ -254,6 +272,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedVerifyRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/messages/': {
+      id: '/_authenticated/messages/'
+      path: '/messages'
+      fullPath: '/messages/'
+      preLoaderRoute: typeof AuthenticatedMessagesIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/messages/$id': {
+      id: '/_authenticated/messages/$id'
+      path: '/messages/$id'
+      fullPath: '/messages/$id'
+      preLoaderRoute: typeof AuthenticatedMessagesIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/rooms/$id': {
+      id: '/_authenticated/rooms/$id'
+      path: '/rooms/$id'
+      fullPath: '/rooms/$id'
+      preLoaderRoute: typeof AuthenticatedRoomsIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/api/public/catalog-search': {
       id: '/api/public/catalog-search'
       path: '/api/public/catalog-search'
@@ -266,20 +305,24 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedLikesRoute: typeof AuthenticatedLikesRoute
-  AuthenticatedMessagesRoute: typeof AuthenticatedMessagesRoute
   AuthenticatedPremiumRoute: typeof AuthenticatedPremiumRoute
   AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
   AuthenticatedReviewRoute: typeof AuthenticatedReviewRoute
   AuthenticatedVerifyRoute: typeof AuthenticatedVerifyRoute
+  AuthenticatedMessagesIdRoute: typeof AuthenticatedMessagesIdRoute
+  AuthenticatedRoomsIdRoute: typeof AuthenticatedRoomsIdRoute
+  AuthenticatedMessagesIndexRoute: typeof AuthenticatedMessagesIndexRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedLikesRoute: AuthenticatedLikesRoute,
-  AuthenticatedMessagesRoute: AuthenticatedMessagesRoute,
   AuthenticatedPremiumRoute: AuthenticatedPremiumRoute,
   AuthenticatedProfileRoute: AuthenticatedProfileRoute,
   AuthenticatedReviewRoute: AuthenticatedReviewRoute,
   AuthenticatedVerifyRoute: AuthenticatedVerifyRoute,
+  AuthenticatedMessagesIdRoute: AuthenticatedMessagesIdRoute,
+  AuthenticatedRoomsIdRoute: AuthenticatedRoomsIdRoute,
+  AuthenticatedMessagesIndexRoute: AuthenticatedMessagesIndexRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
