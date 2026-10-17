@@ -339,6 +339,53 @@ export type Database = {
           },
         ]
       }
+      payment_subscriptions: {
+        Row: {
+          cancel_at_period_end: boolean
+          current_period_end: string | null
+          environment: string
+          event_created: number
+          price_id: string
+          provider_customer_id: string
+          provider_subscription_id: string
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          cancel_at_period_end?: boolean
+          current_period_end?: string | null
+          environment: string
+          event_created?: number
+          price_id: string
+          provider_customer_id: string
+          provider_subscription_id: string
+          status: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          cancel_at_period_end?: boolean
+          current_period_end?: string | null
+          environment?: string
+          event_created?: number
+          price_id?: string
+          provider_customer_id?: string
+          provider_subscription_id?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payment_subscriptions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       photo_jobs: {
         Row: {
           created_at: string
@@ -719,6 +766,20 @@ export type Database = {
         Returns: string
       }
       rewind_swipe: { Args: never; Returns: boolean }
+      sync_payment_subscription: {
+        Args: {
+          _cancel: boolean
+          _customer: string
+          _end: string
+          _env: string
+          _event_created: number
+          _id: string
+          _price: string
+          _status: string
+          _user: string
+        }
+        Returns: undefined
+      }
     }
     Enums: {
       [_ in never]: never
