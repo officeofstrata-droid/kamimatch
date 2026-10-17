@@ -4,6 +4,8 @@ import { Heart, X, Star, RotateCcw, ShieldCheck, Flame, MessageCircle, User, Spa
 import ren from "@/assets/char-ren.jpg";
 import aiko from "@/assets/char-aiko.jpg";
 import kai from "@/assets/char-kai.jpg";
+import { Button } from '@/components/ui/button';
+import { useSession } from '@/components/SessionProvider';
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -84,7 +86,7 @@ function SwipeCard({ p, top, onSwipe }: { p: Profile; top: boolean; onSwipe: (di
       {dx < -30 && <span className="absolute right-5 top-8 rotate-12 rounded-lg border-4 border-nope px-3 py-1 font-display text-3xl text-nope">NOPE</span>}
 
       <div className="absolute right-3 top-3 flex items-center gap-1 rounded-full bg-card/90 px-2.5 py-1 text-[11px] font-extrabold text-secondary-foreground">
-        <ShieldCheck className="h-3.5 w-3.5 text-primary" /> ID Verified • 18+
+        <Sparkles className="h-3.5 w-3.5 text-primary" /> Sample character • 18+
       </div>
 
       <div className="absolute inset-x-0 bottom-0 p-5 text-primary-foreground">
@@ -116,6 +118,7 @@ function SwipeCard({ p, top, onSwipe }: { p: Profile; top: boolean; onSwipe: (di
 }
 
 function Index() {
+  const { user } = useSession();
   const [deck, setDeck] = useState(PROFILES);
   const [matched, setMatched] = useState<Profile | null>(null);
   const [key, setKey] = useState(0);
@@ -134,12 +137,12 @@ function Index() {
       <div className="relative mx-auto flex min-h-screen max-w-md flex-col px-4 pb-24">
         {/* Top bar */}
         <header className="flex items-center justify-between py-4">
-          <button aria-label="Profile" className="rounded-full p-2 text-muted-foreground hover:bg-secondary"><User className="h-6 w-6" /></button>
+          <Button asChild variant="ghost" size="icon" className="rounded-full text-muted-foreground"><Link to={user ? '/profile' : '/auth'} aria-label={user ? 'My profile' : 'Sign in'}><User className="h-6 w-6" /></Link></Button>
           <div className="flex items-center gap-1.5">
             <Flame className="h-7 w-7 text-primary" fill="currentColor" />
             <span className="text-brand font-display text-2xl">waifumatch</span>
           </div>
-          <button aria-label="Messages" className="rounded-full p-2 text-muted-foreground hover:bg-secondary"><MessageCircle className="h-6 w-6" /></button>
+          <Button variant="ghost" size="icon" disabled title="Messages are not available yet" aria-label="Messages not available yet" className="rounded-full text-muted-foreground"><MessageCircle className="h-6 w-6" /></Button>
         </header>
 
         <nav className="mb-3 flex gap-2">
@@ -149,7 +152,7 @@ function Index() {
         </nav>
 
         <p className="mb-3 rounded-full bg-secondary px-4 py-1.5 text-center text-xs font-bold text-secondary-foreground">
-          ✿ 18+ only — every profile is ID verified
+          ✿ Sample deck · real meetings require ID + selfie approval
         </p>
 
         {/* Deck */}
@@ -158,7 +161,7 @@ function Index() {
             <div className="flex h-full flex-col items-center justify-center rounded-[var(--radius)] border-2 border-dashed border-border bg-card/70 p-8 text-center">
               <span className="font-display text-5xl text-primary">桜</span>
               <h2 className="mt-3 font-display text-2xl">That's today's Soulmate Pull</h2>
-              <p className="mt-2 text-sm text-muted-foreground">New matches bloom tomorrow. Premium gets unlimited pulls.</p>
+              <p className="mt-2 text-sm text-muted-foreground">You've explored the sample characters. Real discovery is being completed next.</p>
               <button onClick={() => setDeck(PROFILES)} className="mt-6 rounded-full bg-brand px-6 py-3 font-extrabold text-primary-foreground shadow-card">Pull again</button>
             </div>
           ) : (
@@ -177,7 +180,7 @@ function Index() {
         </div>
 
         <div className="mt-8 text-center">
-          <button className="w-full rounded-full bg-brand py-4 font-extrabold text-primary-foreground shadow-card transition hover:brightness-110">Create your character</button>
+          <Button asChild className="h-14 w-full rounded-full bg-brand font-extrabold shadow-card"><Link to={user ? '/profile' : '/auth'}>{user ? 'My character & safety check' : 'Create your character'}</Link></Button>
           <p className="mt-3 text-xs text-muted-foreground">You must be 18 or older and verify your identity to use WaifuMatch.</p>
         </div>
       </div>
@@ -186,7 +189,7 @@ function Index() {
       {matched && (
         <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-ink/85 p-6 text-center text-primary-foreground backdrop-blur" onClick={() => setMatched(null)}>
           <p className="pop-in font-display text-6xl text-brand">運命!</p>
-          <h2 className="pop-in mt-2 font-display text-4xl">It's a Match!</h2>
+          <h2 className="pop-in mt-2 font-display text-4xl">A sample match!</h2>
           <img src={matched.img} alt={matched.name} width={768} height={1024} className="pop-in mt-6 h-40 w-40 rounded-full border-4 border-primary object-cover" />
           <p className="mt-4 max-w-xs text-sm opacity-90">{matched.match}% — you both love:</p>
           <div className="mt-3 flex max-w-xs flex-wrap justify-center gap-1.5">
@@ -197,8 +200,8 @@ function Index() {
               </span>
             ))}
           </div>
-          <button className="mt-6 rounded-full bg-brand px-8 py-3 font-extrabold shadow-card">Send an icebreaker</button>
-          <button className="mt-3 text-sm opacity-80">Keep swiping</button>
+          <Button asChild className="mt-6 h-12 rounded-full bg-brand px-8 font-extrabold shadow-card"><Link to={user ? '/profile' : '/auth'} onClick={(e) => e.stopPropagation()}>Build my real profile</Link></Button>
+          <Button variant="ghost" onClick={() => setMatched(null)} className="mt-3 text-primary-foreground">Keep swiping</Button>
         </div>
       )}
     </main>

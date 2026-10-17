@@ -14,13 +14,181 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      account_details: {
+        Row: {
+          birth_date: string
+          safety_consent_at: string
+          user_id: string
+        }
+        Insert: {
+          birth_date: string
+          safety_consent_at?: string
+          user_id: string
+        }
+        Update: {
+          birth_date?: string
+          safety_consent_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "account_details_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      anime_preferences: {
+        Row: {
+          anime: string[]
+          characters: string[]
+          dub: string
+          filler: number
+          mood: string
+          moves: string[]
+          rewatch: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          anime?: string[]
+          characters?: string[]
+          dub?: string
+          filler?: number
+          mood?: string
+          moves?: string[]
+          rewatch?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          anime?: string[]
+          characters?: string[]
+          dub?: string
+          filler?: number
+          mood?: string
+          moves?: string[]
+          rewatch?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "anime_preferences_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      identity_submissions: {
+        Row: {
+          id: string
+          id_path: string
+          reviewed_at: string | null
+          reviewed_by: string | null
+          reviewer_note: string
+          selfie_path: string
+          status: string
+          submitted_at: string
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          id_path: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          reviewer_note?: string
+          selfie_path: string
+          status?: string
+          submitted_at?: string
+          user_id: string
+        }
+        Update: {
+          id?: string
+          id_path?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          reviewer_note?: string
+          selfie_path?: string
+          status?: string
+          submitted_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "identity_submissions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          age: number
+          archetype: string
+          avatar: string
+          bio: string
+          city: string
+          created_at: string
+          display_name: string
+          id: string
+          watching: string
+        }
+        Insert: {
+          age: number
+          archetype?: string
+          avatar?: string
+          bio?: string
+          city?: string
+          created_at?: string
+          display_name: string
+          id: string
+          watching?: string
+        }
+        Update: {
+          age?: number
+          archetype?: string
+          avatar?: string
+          bio?: string
+          city?: string
+          created_at?: string
+          display_name?: string
+          id?: string
+          watching?: string
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          id: string
+          role: string
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          role: string
+          user_id: string
+        }
+        Update: {
+          id?: string
+          role?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: { Args: { _role: string; _user_id: string }; Returns: boolean }
+      is_verified: { Args: { _user_id: string }; Returns: boolean }
     }
     Enums: {
       [_ in never]: never

@@ -3,6 +3,11 @@ import { useEffect, useState } from "react";
 import { ArrowLeft, Check, Heart, Search, Sparkles, Users, X, Zap } from "lucide-react";
 import { FILLER_LABELS, MOODS, MOVES, SEED_ANIME, SEED_CHARACTERS } from "@/lib/catalog";
 import { Petals } from "@/components/Petals";
+import { Button } from '@/components/ui/button';
+import { useSession } from '@/components/SessionProvider';
+import { useServerFn } from '@tanstack/react-start';
+import { getAccount, savePreferences } from '@/lib/account.functions';
+import { preferencesSchema } from '@/lib/account-rules';
 
 export const Route = createFileRoute("/top10")({
   head: () => ({
@@ -39,6 +44,12 @@ const TABS: { id: Tab; label: string; icon: typeof Heart }[] = [
 const toHits = (list: string[]): Hit[] => list.map((t) => ({ id: t, title: t }));
 
 function Top10() {
+  const { user, loading: sessionLoading } = useSession();
+  const readAccount = useServerFn(getAccount);
+  const writePreferences = useServerFn(savePreferences);
+  const [accountReady, setAccountReady] = useState(false);
+  const [saveBusy, setSaveBusy] = useState(false);
+  const [saveError, setSaveError] = useState('');
   const [tab, setTab] = useState<Tab>("anime");
   const [q, setQ] = useState("");
   const [hits, setHits] = useState<Hit[]>(() => toHits(SEED_ANIME));
@@ -65,6 +76,20 @@ function Top10() {
       /* first visit */
     }
   }, []);
+
+  useEffect(() => {
+    if (sessionLoading) return;
+    let active = true;
+    setAccountReady(false);
+    if (!user) { setAccountReady(true); return; }
+    void readAccount().then((account) => {
+      if (!active) return;
+      const p = account.preferences;
+      if (p) { setPicked({ anime: p.anime, characters: p.characters, moves: p.moves }); setFiller(p.filler); setDub(p.dub as 'sub' | 'dub' | 'both'); setRewatch(p.rewatch); setMood(p.mood); }
+      setAccountReady(true);
+    }).catch(() => { if (active) setSaveError('Your saved favourites could not be loaded. Refresh before saving.'); });
+    return () => { active = false; };
+  }, [user?.id, sessionLoading, readAccount]);
 
   useEffect(() => {
     const term = q.trim();
@@ -109,7 +134,7 @@ function Top10() {
     setSaved(false);
     setPicked((prev) => {
       const cur = prev[tab];
-      if (cur.includes(id)) return { ...prev, [tab]: cur.filter((x) => x !== id) };
+      if (cur.includes(title) || cur.includes(id)) return { ...prev, [tab]: cur.filter((x) => x !== id && x !== title) };
       if (cur.length >= MAX) return prev;
       return { ...prev, [tab]: [...cur, `${title}`] };
     });
@@ -117,9 +142,15 @@ function Top10() {
 
   const isChosen = (id: string, title: string) => chosen.includes(title) || chosen.includes(id);
 
-  const save = () => {
-    localStorage.setItem("wm-top10", JSON.stringify({ picked, filler, dub, rewatch, mood }));
-    setSaved(true);
+  const save = async () => {
+    setSaveError(''); setSaveBusy(true);
+    try {
+      const data = preferencesSchema.parse({ picked, filler, dub, rewatch, mood });
+      if (user) await writePreferences({ data });
+      else localStorage.setItem("wm-top10", JSON.stringify(data));
+      setSaved(true);
+    } catch (err) { setSaveError(err instanceof Error ? err.message : 'Your favourites could not be saved.'); }
+    finally { setSaveBusy(false); }
   };
 
   return (
@@ -254,7 +285,7 @@ function Top10() {
           <div className="mt-4 space-y-5">
             <div>
               <p className="text-sm font-extrabold">
-                Filler tolerance: <span className="text-primary">{FILLER_LABELS[filler - 1]}</span>
+                Filler tolerance (extra episodes): <span className="text-primary">{FILLER_LABELS[filler - 1]}</span>
               </p>
               <input
                 type="range"
@@ -268,7 +299,7 @@ function Top10() {
             </div>
 
             <div>
-              <p className="text-sm font-extrabold">Sub or dub</p>
+              <p className="text-sm font-extrabold">Sub (subtitles) or dub (translated voices)</p>
               <div className="mt-2 flex gap-2">
                 {(["sub", "dub", "both"] as const).map((d) => (
                   <button
@@ -325,14 +356,16 @@ function Top10() {
           </div>
         </section>
 
-        <button
+        {saveError && <p role="alert" className="mt-4 text-sm text-destructive">{saveError}</p>}
+        <Button
           onClick={save}
-          className="mt-6 w-full rounded-full bg-brand py-4 font-extrabold text-primary-foreground shadow-card transition hover:brightness-110"
+          disabled={!accountReady || saveBusy}
+          className="mt-6 h-14 w-full rounded-full bg-brand font-extrabold text-primary-foreground shadow-card transition hover:brightness-110"
         >
-          {saved ? "Saved ✿ looks like you" : "Save my Anime DNA"}
-        </button>
+          {saveBusy ? 'Saving…' : saved ? "Saved ✿ looks like you" : "Save my Anime DNA (anime taste)"}
+        </Button>
         <p className="mt-3 text-center text-xs text-muted-foreground">
-          Kept on this device for now — it moves to your profile the moment accounts go live.
+          {user ? 'Saved to your account after you complete your profile.' : <Link to="/auth" className="text-primary">Sign in to save to your profile · guest picks stay on this device</Link>}
         </p>
       </div>
     </main>
