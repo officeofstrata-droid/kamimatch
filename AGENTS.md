@@ -17,3 +17,6 @@
 - Keep dating, communities and media in dedicated authenticated server-function modules; database policies independently enforce verification, ownership and entitlements.
 - Provider sessions bind an opaque local session ID to the provider session and workflow; only signed live full-payload decisions with passed document, liveness, face match and matching adult DOB may approve.
 - Use the database is_verified result for all eligibility displays and capabilities, not manual-submission status, because provider approval is independent of manual review.
+- Persist daily discovery selections in owner-readable database rows through a locked RPC, rechecking verification and blocks on every read so refreshes cannot reroll or expose an unsafe pick.
+- Keep room input validation and local-time conversion in community-rules so optional scheduling behaves consistently at both input boundaries.
+- Safety report review lives in an authenticated reviewer-only route and checks the trusted role again on mutation, independently of RLS.

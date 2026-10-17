@@ -1,5 +1,12 @@
 # WaifuMatch completion roadmap
 
+## Current completion pass
+- [ ] Enable Stripe test payments, create Premium subscription and wire checkout; live payments require owner account claim
+- [ ] Finish moderation report queue and daily soulmate selection
+- [ ] Audit and repair account, discovery, community and media flows
+- [ ] Run rule tests and signed-in/public browser checks
+- [ ] Report remaining launch blockers; defer Didit account connection until app preparation is complete
+
 ## New sign-in and verification request
 - [x] Replace Veriff with Didit sessions, signed decision handling and adult ID/selfie checks; free allowance confirmed
 - [x] Apple sign-in enabled; sign-in button respects adult consent

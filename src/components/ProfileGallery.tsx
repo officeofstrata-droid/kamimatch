@@ -24,8 +24,8 @@ export function ProfileGallery({ verified }: { verified: boolean }) {
  const ext=({'image/jpeg':'jpg','image/png':'png','image/webp':'webp','video/mp4':'mp4','video/quicktime':'mov'} as Record<string,string>)[file.type];
  const path=`${user.id}/${crypto.randomUUID()}.${ext}`;const bucket=kind==='photo'?'profile-originals':'profile-media';setBusy(true);
  try { const result=await supabase.storage.from(bucket).upload(path,file,{contentType:file.type});if(result.error)throw new Error('Your upload did not finish. Please try again.');
- if(kind==='photo')await convert({data:{path,style,consent:true}});else await video({data:{path}});
- await client.invalidateQueries({queryKey:['gallery']}); setNotice(kind==='photo'?'Your anime portrait is ready. Your original has been removed.':'Your video is now in your gallery.');
+ if(kind==='photo'){const converted=await convert({data:{path,style,consent:true}});setNotice(converted.originalRemoved?'Your anime portrait is ready. Your original has been removed.':'Your anime portrait is ready. Your original is still private; removal did not finish.');}else{await video({data:{path}});setNotice('Your video is now in your gallery.');}
+ await client.invalidateQueries({queryKey:['gallery']});
  }catch(e){setError(e instanceof Error?e.message:'Upload could not finish.');await client.invalidateQueries({queryKey:['gallery']});}finally{setBusy(false);}
  }
  async function deleteItem(id:string){setBusy(true);setError('');try{await remove({data:{id}});await client.invalidateQueries({queryKey:['gallery']});}catch(e){setError(e instanceof Error?e.message:'Could not delete.');}finally{setBusy(false);}}

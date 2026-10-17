@@ -7,7 +7,9 @@ export const getDating=createServerFn({method:'GET'}).middleware([requireSupabas
  const {supabase,userId}=context;
  const [verified,premium,own,profiles,swipes]=await Promise.all([supabase.rpc('is_verified',{_user_id:userId}),supabase.rpc('is_premium',{_user_id:userId}),supabase.from('anime_preferences').select('*').eq('user_id',userId).maybeSingle(),supabase.from('profiles').select('*').neq('id',userId).limit(150),supabase.from('swipes').select('target_id').eq('actor_id',userId)]);
  if(verified.error || premium.error || profiles.error || own.error || swipes.error) throw new Error('Discovery could not be loaded.');
- if(!verified.data) return {verified:false,premium:premium.data===true,profiles:[]};
+ if(!verified.data) return {verified:false,premium:premium.data===true,profiles:[],dailyPickId:null};
+ const daily=await supabase.rpc('get_daily_soulmate');
+ if(daily.error)throw new Error('Your daily connection could not be loaded.');
  const seen=new Set((swipes.data??[]).map(row=>row.target_id));
  const candidates=await Promise.all((profiles.data??[]).filter(row=>!seen.has(row.id)).map(async row=>{
  const eligible=await supabase.rpc('is_verified',{_user_id:row.id});
@@ -18,7 +20,7 @@ export const getDating=createServerFn({method:'GET'}).middleware([requireSupabas
  const photos=await Promise.all((media.data??[]).filter(x=>x.kind==='anime_photo').map(async x=>(await supabase.storage.from('profile-media').createSignedUrl(x.path,300)).data?.signedUrl));
  return {...row,photos:photos.filter((x):x is string=>!!x),...compatibility(own.data,taste.data)};
  }));
- return {verified:true,premium:premium.data===true,profiles:candidates.filter((row):row is NonNullable<typeof row>=>row!==null).sort((a,b)=>b.score-a.score)};
+ return {verified:true,premium:premium.data===true,dailyPickId:daily.data,profiles:candidates.filter((row):row is NonNullable<typeof row>=>row!==null).sort((a,b)=>a.id===daily.data?-1:b.id===daily.data?1:b.score-a.score)};
 });
 export const swipeMember=createServerFn({method:'POST'}).middleware([requireSupabaseAuth]).inputValidator(input=>z.object({target:z.string().uuid(),choice:z.enum(['like','pass','super'])}).parse(input)).handler(async({data,context})=>{
  const result=await context.supabase.rpc('cast_swipe',{_target:data.target,_choice:data.choice});
@@ -50,9 +52,11 @@ export const sendMessage=createServerFn({method:'POST'}).middleware([requireSupa
  if(result.error) throw new Error('Message could not be sent. Check that your match is still available.');return {ok:true};
 });
 export const blockMember=createServerFn({method:'POST'}).middleware([requireSupabaseAuth]).inputValidator(input=>z.object({target:z.string().uuid()}).parse(input)).handler(async({data,context})=>{
+ if(data.target===context.userId)throw new Error('You cannot block yourself.');
  const result=await context.supabase.from('blocks').upsert({blocker_id:context.userId,blocked_id:data.target},{ignoreDuplicates:true}); if(result.error) throw new Error('Could not block this member.'); return {ok:true};
 });
 export const reportMember=createServerFn({method:'POST'}).middleware([requireSupabaseAuth]).inputValidator(input=>z.object({target:z.string().uuid(),reason:z.string().trim().min(3).max(1000)}).parse(input)).handler(async({data,context})=>{
+ if(data.target===context.userId)throw new Error('You cannot report yourself.');
  const result=await context.supabase.from('reports').insert({reporter_id:context.userId,reported_id:data.target,reason:data.reason}); if(result.error) throw new Error('Your report could not be submitted.');return {ok:true};
 });
 export const getLikes=createServerFn({method:'GET'}).middleware([requireSupabaseAuth]).handler(async({context})=>{
@@ -69,5 +73,7 @@ export const getReports=createServerFn({method:'GET'}).middleware([requireSupaba
  const reports=await context.supabase.from('reports').select('*').eq('status','open').order('created_at'); if(reports.error) throw new Error('Reports could not be loaded.');return reports.data;
 });
 export const closeReport=createServerFn({method:'POST'}).middleware([requireSupabaseAuth]).inputValidator(input=>z.object({id:z.string().uuid()}).parse(input)).handler(async({data,context})=>{
+ const role=await context.supabase.rpc('has_role',{_user_id:context.userId,_role:'admin'});
+ if(role.error||role.data!==true)throw new Error('Reviewer access is required.');
  const result=await context.supabase.from('reports').update({status:'reviewed'}).eq('id',data.id).select('id').single();if(result.error) throw new Error('Reviewer access is required.');return {ok:true};
 });

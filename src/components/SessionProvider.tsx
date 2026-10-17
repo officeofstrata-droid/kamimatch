@@ -19,8 +19,12 @@ export function SessionProvider({ children }: { children: ReactNode }) {
       setUser(session?.user ?? null);
       setLoading(false);
       if (!['SIGNED_IN', 'SIGNED_OUT', 'USER_UPDATED'].includes(event)) return;
+      if (event === 'SIGNED_OUT') {
+        void queryClient.cancelQueries().then(() => { queryClient.clear(); void router.invalidate(); });
+        return;
+      }
       void router.invalidate();
-      if (event !== 'SIGNED_OUT') void queryClient.invalidateQueries();
+      void queryClient.invalidateQueries();
     });
     void supabase.auth.getSession().then(({ data }) => {
       if (active) { setUser(data.session?.user ?? null); setLoading(false); }

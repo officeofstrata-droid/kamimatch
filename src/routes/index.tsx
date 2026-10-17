@@ -44,8 +44,8 @@ const TAG_NOTES: Record<string, string> = {
 
 const PROFILES: Profile[] = [
   { name: "Aiko", age: 24, img: aiko, archetype: "Tsundere", match: 92, watching: "Frieren S2", tags: ["Slow burn", "Enemies to lovers", "Steins;Gate"], why: "It's not like I wanted you to swipe right or anything…" },
-  { name: "Ren", age: 27, img: ren, archetype: "Kuudere", match: 87, watching: "Monster", tags: ["Psych thriller", "Found family", "Death Note"], why: "Quiet, observant, will remember your favourite OST." },
-  { name: "Kai", age: 25, img: kai, archetype: "Genki", match: 81, watching: "Haikyuu!!", tags: ["Sports anime", "Rivals", "Isekai"], why: "Will drag you to every cosplay con. Brings snacks." },
+  { name: "Ren", age: 27, img: ren, archetype: "Kuudere", match: 87, watching: "Monster", tags: ["Psych thriller", "Found family", "Death Note"], why: "Quiet, observant, will remember your favourite OST (soundtrack)." },
+  { name: "Kai", age: 25, img: kai, archetype: "Genki", match: 81, watching: "Haikyuu!!", tags: ["Sports anime", "Rivals", "Isekai"], why: "Will drag you to every cosplay con (costume convention). Brings snacks." },
 ];
 
 function Petals() {
@@ -162,8 +162,8 @@ function Index() {
           {deck.length === 0 ? (
             <div className="flex h-full flex-col items-center justify-center rounded-[var(--radius)] border-2 border-dashed border-border bg-card/70 p-8 text-center">
               <span className="font-display text-5xl text-primary">桜</span>
-              <h2 className="mt-3 font-display text-2xl">That's today's Soulmate Pull</h2>
-              <p className="mt-2 text-sm text-muted-foreground">You've explored the sample characters. Real discovery is being completed next.</p>
+              <h2 className="mt-3 font-display text-2xl">That's the sample deck</h2>
+              <p className="mt-2 text-sm text-muted-foreground">You've explored the sample characters. Sign in and verify your identity to discover real members.</p>
               <button onClick={() => setDeck(PROFILES)} className="mt-6 rounded-full bg-brand px-6 py-3 font-extrabold text-primary-foreground shadow-card">Pull again</button>
             </div>
           ) : (

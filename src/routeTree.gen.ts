@@ -17,6 +17,7 @@ import { Route as Top10RouteImport } from './routes/top10'
 import { Route as AuthenticatedLikesRouteImport } from './routes/_authenticated/likes'
 import { Route as AuthenticatedPremiumRouteImport } from './routes/_authenticated/premium'
 import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
+import { Route as AuthenticatedReportsRouteImport } from './routes/_authenticated/reports'
 import { Route as AuthenticatedReviewRouteImport } from './routes/_authenticated/review'
 import { Route as AuthenticatedVerifyRouteImport } from './routes/_authenticated/verify'
 import { Route as AuthenticatedMessagesIndexRouteImport } from './routes/_authenticated/messages.index'
@@ -64,6 +65,11 @@ const AuthenticatedProfileRoute = AuthenticatedProfileRouteImport.update({
   path: '/profile',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedReportsRoute = AuthenticatedReportsRouteImport.update({
+  id: '/reports',
+  path: '/reports',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedReviewRoute = AuthenticatedReviewRouteImport.update({
   id: '/review',
   path: '/review',
@@ -109,6 +115,7 @@ export interface FileRoutesByFullPath {
   '/likes': typeof AuthenticatedLikesRoute
   '/premium': typeof AuthenticatedPremiumRoute
   '/profile': typeof AuthenticatedProfileRoute
+  '/reports': typeof AuthenticatedReportsRoute
   '/review': typeof AuthenticatedReviewRoute
   '/verify': typeof AuthenticatedVerifyRoute
   '/messages/$id': typeof AuthenticatedMessagesIdRoute
@@ -125,6 +132,7 @@ export interface FileRoutesByTo {
   '/likes': typeof AuthenticatedLikesRoute
   '/premium': typeof AuthenticatedPremiumRoute
   '/profile': typeof AuthenticatedProfileRoute
+  '/reports': typeof AuthenticatedReportsRoute
   '/review': typeof AuthenticatedReviewRoute
   '/verify': typeof AuthenticatedVerifyRoute
   '/messages/$id': typeof AuthenticatedMessagesIdRoute
@@ -143,6 +151,7 @@ export interface FileRoutesById {
   '/_authenticated/likes': typeof AuthenticatedLikesRoute
   '/_authenticated/premium': typeof AuthenticatedPremiumRoute
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
+  '/_authenticated/reports': typeof AuthenticatedReportsRoute
   '/_authenticated/review': typeof AuthenticatedReviewRoute
   '/_authenticated/verify': typeof AuthenticatedVerifyRoute
   '/_authenticated/messages/$id': typeof AuthenticatedMessagesIdRoute
@@ -161,6 +170,7 @@ export interface FileRouteTypes {
     | '/likes'
     | '/premium'
     | '/profile'
+    | '/reports'
     | '/review'
     | '/verify'
     | '/messages/$id'
@@ -177,6 +187,7 @@ export interface FileRouteTypes {
     | '/likes'
     | '/premium'
     | '/profile'
+    | '/reports'
     | '/review'
     | '/verify'
     | '/messages/$id'
@@ -194,6 +205,7 @@ export interface FileRouteTypes {
     | '/_authenticated/likes'
     | '/_authenticated/premium'
     | '/_authenticated/profile'
+    | '/_authenticated/reports'
     | '/_authenticated/review'
     | '/_authenticated/verify'
     | '/_authenticated/messages/$id'
@@ -271,6 +283,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedProfileRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/reports': {
+      id: '/_authenticated/reports'
+      path: '/reports'
+      fullPath: '/reports'
+      preLoaderRoute: typeof AuthenticatedReportsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/review': {
       id: '/_authenticated/review'
       path: '/review'
@@ -327,6 +346,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedLikesRoute: typeof AuthenticatedLikesRoute
   AuthenticatedPremiumRoute: typeof AuthenticatedPremiumRoute
   AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
+  AuthenticatedReportsRoute: typeof AuthenticatedReportsRoute
   AuthenticatedReviewRoute: typeof AuthenticatedReviewRoute
   AuthenticatedVerifyRoute: typeof AuthenticatedVerifyRoute
   AuthenticatedMessagesIdRoute: typeof AuthenticatedMessagesIdRoute
@@ -338,6 +358,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedLikesRoute: AuthenticatedLikesRoute,
   AuthenticatedPremiumRoute: AuthenticatedPremiumRoute,
   AuthenticatedProfileRoute: AuthenticatedProfileRoute,
+  AuthenticatedReportsRoute: AuthenticatedReportsRoute,
   AuthenticatedReviewRoute: AuthenticatedReviewRoute,
   AuthenticatedVerifyRoute: AuthenticatedVerifyRoute,
   AuthenticatedMessagesIdRoute: AuthenticatedMessagesIdRoute,

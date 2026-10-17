@@ -65,12 +65,10 @@ function Top10() {
     try {
       const raw = localStorage.getItem("wm-top10");
       if (raw) {
-        const data = JSON.parse(raw);
-        if (data.picked) setPicked((p) => ({ ...p, ...data.picked }));
-        if (typeof data.filler === "number") setFiller(data.filler);
-        if (data.dub) setDub(data.dub);
-        if (typeof data.rewatch === "number") setRewatch(data.rewatch);
-        if (data.mood) setMood(data.mood);
+        const parsed = preferencesSchema.safeParse(JSON.parse(raw));
+        if (!parsed.success) return;
+        const data = parsed.data;
+        setPicked(data.picked); setFiller(data.filler); setDub(data.dub); setRewatch(data.rewatch); setMood(data.mood);
       }
     } catch {
       /* first visit */
@@ -166,7 +164,7 @@ function Top10() {
             <ArrowLeft className="h-5 w-5" />
           </Link>
           <div>
-            <h1 className="font-display text-3xl leading-none text-brand">Anime DNA</h1>
+            <h1 className="font-display text-3xl leading-none text-brand">Anime DNA <span className="text-sm">(anime taste)</span></h1>
             <p className="text-xs font-bold text-secondary-foreground">
               Your top 10 — anime, characters and moves
             </p>
@@ -175,8 +173,10 @@ function Top10() {
 
         <div className="flex gap-2">
           {TABS.map((t) => (
-            <button
+            <Button
               key={t.id}
+              variant="ghost"
+              aria-pressed={tab === t.id}
               onClick={() => {
                 setTab(t.id);
                 setQ("");
@@ -188,7 +188,7 @@ function Top10() {
               }`}
             >
               <t.icon className="h-4 w-4" /> {t.label}
-            </button>
+            </Button>
           ))}
         </div>
 
@@ -220,13 +220,15 @@ function Top10() {
         {chosen.length > 0 && (
           <div className="mt-3 flex flex-wrap gap-1.5">
             {chosen.map((c) => (
-              <button
+              <Button
                 key={c}
+                variant="ghost"
+                title={`Remove ${c}`}
                 onClick={() => toggle(c, c)}
-                className="rounded-full bg-brand px-3 py-1.5 text-xs font-bold text-primary-foreground"
+                className="h-auto max-w-full whitespace-normal break-words rounded-full bg-brand px-3 py-1.5 text-left text-xs font-bold text-primary-foreground"
               >
                 {c} <X className="ml-1 inline h-3 w-3" />
-              </button>
+              </Button>
             ))}
           </div>
         )}
@@ -240,11 +242,13 @@ function Top10() {
           {hits.map((h) => {
             const on = isChosen(h.id, h.title);
             return (
-              <button
+              <Button
                 key={h.id}
+                variant="ghost"
+                aria-pressed={on}
                 onClick={() => toggle(h.id, h.title)}
                 disabled={!on && full}
-                className={`flex w-full items-center gap-3 rounded-[var(--radius)] border-2 bg-card p-2.5 text-left shadow-card transition ${
+                className={`flex h-auto w-full items-center gap-3 rounded-[var(--radius)] border-2 bg-card p-2.5 text-left shadow-card transition ${
                   on ? "border-primary bg-primary/10" : "border-border hover:border-primary"
                 } ${!on && full ? "opacity-40" : ""}`}
               >
@@ -271,7 +275,7 @@ function Top10() {
                 >
                   {on ? <Check className="h-3.5 w-3.5" strokeWidth={3} /> : <span className="text-xs font-extrabold">+</span>}
                 </span>
-              </button>
+              </Button>
             );
           })}
         </div>
@@ -293,7 +297,7 @@ function Top10() {
                 max={5}
                 step={1}
                 value={filler}
-                onChange={(e) => setFiller(Number(e.target.value))}
+                onChange={(e) => { setSaved(false); setFiller(Number(e.target.value)); }}
                 className="mt-2 w-full accent-primary"
               />
             </div>
@@ -302,17 +306,19 @@ function Top10() {
               <p className="text-sm font-extrabold">Sub (subtitles) or dub (translated voices)</p>
               <div className="mt-2 flex gap-2">
                 {(["sub", "dub", "both"] as const).map((d) => (
-                  <button
+                  <Button
                     key={d}
-                    onClick={() => setDub(d)}
+                    variant="ghost"
+                    aria-pressed={dub === d}
+                    onClick={() => { setSaved(false); setDub(d); }}
                     className={`flex-1 rounded-full border-2 py-2 text-xs font-extrabold uppercase transition ${
                       dub === d
                         ? "border-transparent bg-brand text-primary-foreground"
                         : "border-border text-muted-foreground hover:border-primary"
                     }`}
                   >
-                    {d}
-                  </button>
+                    {d === 'sub' ? 'Sub (subtitles)' : d === 'dub' ? 'Dub (voices)' : 'Both'}
+                  </Button>
                 ))}
               </div>
             </div>
@@ -330,7 +336,7 @@ function Top10() {
                 max={5}
                 step={1}
                 value={rewatch}
-                onChange={(e) => setRewatch(Number(e.target.value))}
+                onChange={(e) => { setSaved(false); setRewatch(Number(e.target.value)); }}
                 className="mt-2 w-full accent-primary"
               />
             </div>
@@ -339,9 +345,11 @@ function Top10() {
               <p className="text-sm font-extrabold">Tonight's mood</p>
               <div className="mt-2 flex flex-wrap gap-1.5">
                 {MOODS.map((m) => (
-                  <button
+                  <Button
                     key={m}
-                    onClick={() => setMood(m)}
+                    variant="ghost"
+                    aria-pressed={mood === m}
+                    onClick={() => { setSaved(false); setMood(m); }}
                     className={`rounded-full border-2 px-3 py-1.5 text-xs font-bold transition ${
                       mood === m
                         ? "border-transparent bg-brand text-primary-foreground"
@@ -349,7 +357,7 @@ function Top10() {
                     }`}
                   >
                     {m}
-                  </button>
+                  </Button>
                 ))}
               </div>
             </div>
