@@ -3,6 +3,7 @@ import { ageOn, canMeet, canReview, preferencesSchema, profileSchema } from '@/l
 
 const today = new Date('2026-10-17T12:00:00Z');
 describe('Adult safety', () => {
+  it('rejects nonexistent calendar birth dates', () => { expect(ageOn('2000-02-31', today)).toBe(-1); expect(ageOn('2000-02-29', today)).toBe(26); });
   it('requires the eighteenth birthday to have happened', () => { expect(ageOn('2008-10-18', today)).toBe(17); expect(ageOn('2008-10-17', today)).toBe(18); });
   it('rejects an underage profile on the server input boundary', () => { expect(profileSchema.safeParse({ display_name: 'Sam', birth_date: '2020-01-01', bio: '', city: '', archetype: '', watching: '', avatar: 'aiko', consent: true }).success).toBe(false); });
   it('only allows approved identity checks to meet', () => { expect(canMeet('pending')).toBe(false); expect(canMeet('rejected')).toBe(false); expect(canMeet(null)).toBe(false); expect(canMeet('approved')).toBe(true); });

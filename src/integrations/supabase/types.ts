@@ -184,6 +184,39 @@ export type Database = {
           },
         ]
       }
+      daily_soulmate_picks: {
+        Row: {
+          pick_date: string
+          target_id: string | null
+          user_id: string
+        }
+        Insert: {
+          pick_date?: string
+          target_id?: string | null
+          user_id: string
+        }
+        Update: {
+          pick_date?: string
+          target_id?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "daily_soulmate_picks_target_id_fkey"
+            columns: ["target_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "daily_soulmate_picks_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       identity_submissions: {
         Row: {
           id: string
@@ -675,6 +708,7 @@ export type Database = {
         Args: { _choice: string; _target: string }
         Returns: string
       }
+      get_daily_soulmate: { Args: never; Returns: string }
       has_role: { Args: { _role: string; _user_id: string }; Returns: boolean }
       in_room: { Args: { _room: string; _user: string }; Returns: boolean }
       is_premium: { Args: { _user_id: string }; Returns: boolean }

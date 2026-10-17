@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 export function ageOn(birthDate: string, today = new Date()): number {
   const birth = new Date(`${birthDate}T00:00:00Z`);
-  if (Number.isNaN(birth.getTime())) return -1;
+  if (Number.isNaN(birth.getTime()) || birth.toISOString().slice(0, 10) !== birthDate) return -1;
   let age = today.getUTCFullYear() - birth.getUTCFullYear();
   if (today.getUTCMonth() < birth.getUTCMonth() || (today.getUTCMonth() === birth.getUTCMonth() && today.getUTCDate() < birth.getUTCDate())) age -= 1;
   return age;
