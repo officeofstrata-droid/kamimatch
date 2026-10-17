@@ -8,6 +8,11 @@
 - [ ] Authenticated end-to-end verification — blocked: no signed-up account exists; requesting user must sign in
 - [ ] Enable trusted reviewer — blocked: owner must identify a reviewer account; no automatic admin assignment
 
+## New media and plans
+- [ ] Anime-style conversion of uploaded photos, private originals, gallery management
+- [ ] Premium-only video uploads with server-side access checks
+- [ ] Generous free plan and premium extras, paid checkout pending owner setup
+
 ## Stage 2 — Dating
 - [ ] Real discovery, compatibility breakdown, daily pull and blind dates
 - [ ] Mutual matches, realtime messages, icebreakers and voice notes
