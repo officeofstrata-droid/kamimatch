@@ -24,7 +24,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
         return;
       }
       void router.invalidate();
-      if (event !== 'SIGNED_OUT') void queryClient.invalidateQueries();
+      void queryClient.invalidateQueries();
     });
     void supabase.auth.getSession().then(({ data }) => {
       if (active) { setUser(data.session?.user ?? null); setLoading(false); }
