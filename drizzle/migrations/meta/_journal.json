@@ -36,6 +36,13 @@
       "when": 1792280609008,
       "tag": "0004_didit_identity_sessions",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1792280776580,
+      "tag": "0005_didit_latest_approval_gate",
+      "breakpoints": true
     }
   ]
 }
