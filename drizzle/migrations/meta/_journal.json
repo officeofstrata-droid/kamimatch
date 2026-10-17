@@ -22,6 +22,27 @@
       "when": 1792279943229,
       "tag": "0002_photo_conversion_quota_and_discovery_visibility",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1792280412179,
+      "tag": "0003_veriff_private_sessions",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1792280609008,
+      "tag": "0004_didit_identity_sessions",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1792280776580,
+      "tag": "0005_didit_latest_approval_gate",
+      "breakpoints": true
     }
   ]
 }

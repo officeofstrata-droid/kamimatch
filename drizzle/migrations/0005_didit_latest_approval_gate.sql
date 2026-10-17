@@ -1,0 +1,3 @@
+CREATE OR REPLACE FUNCTION public.is_verified(_user_id uuid) RETURNS boolean LANGUAGE sql STABLE SECURITY DEFINER SET search_path=public AS $$ SELECT EXISTS(SELECT 1 FROM public.account_details d WHERE d.user_id=_user_id AND d.birth_date <= (CURRENT_DATE-INTERVAL '18 years')::date AND (COALESCE((SELECT status='approved' FROM public.identity_submissions WHERE user_id=_user_id ORDER BY submitted_at DESC,id DESC LIMIT 1),false) OR COALESCE((SELECT v.status='approved' AND v.verified_birth_date=d.birth_date FROM public.verification_sessions v WHERE v.user_id=_user_id AND v.provider='didit' ORDER BY v.created_at DESC,v.id DESC LIMIT 1),false))) $$;
+REVOKE ALL ON FUNCTION public.is_verified(uuid) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION public.is_verified(uuid) TO authenticated;
