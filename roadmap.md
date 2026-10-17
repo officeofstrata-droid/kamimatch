@@ -1,6 +1,7 @@
 # WaifuMatch completion roadmap
 
 ## New sign-in and verification request
+- [ ] Replace Veriff with Didit automated adult ID + live selfie checks; confirm current free allowance and connect owner credentials
 - [ ] Apple sign-in
 - [ ] Discord sign-in — check supported providers
 - [ ] Persona or Veriff automated identity verification
