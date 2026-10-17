@@ -155,7 +155,7 @@ function Index() {
           <p className="pop-in font-display text-6xl text-brand">運命!</p>
           <h2 className="pop-in mt-2 font-display text-4xl">It's a Match!</h2>
           <img src={matched.img} alt={matched.name} width={768} height={1024} className="pop-in mt-6 h-40 w-40 rounded-full border-4 border-primary object-cover" />
-          <p className="mt-4 max-w-xs text-sm opacity-90">{matched.match}% — you both love {matched.tags[0].toLowerCase()} and {matched.tags[2]}.</p>
+          <p className="mt-4 max-w-xs text-sm opacity-90">{matched.match}% — you both love {matched.tags.join(", ")}.</p>
           <button className="mt-6 rounded-full bg-brand px-8 py-3 font-extrabold shadow-card">Send an icebreaker</button>
           <button className="mt-3 text-sm opacity-80">Keep swiping</button>
         </div>
