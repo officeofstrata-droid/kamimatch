@@ -1,14 +1,17 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { ShieldCheck, Sparkles, EyeOff, Heart, Tv, Dices, Zap } from "lucide-react";
-import hero from "@/assets/hero-girl.jpg";
+import { createFileRoute } from "@tanstack/react-router";
+import { useRef, useState } from "react";
+import { Heart, X, Star, RotateCcw, ShieldCheck, Flame, MessageCircle, User, Sparkles, Tv } from "lucide-react";
+import ren from "@/assets/char-ren.jpg";
+import aiko from "@/assets/char-aiko.jpg";
+import kai from "@/assets/char-kai.jpg";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: "WaifuMatch — 18+ ID-verified anime dating" },
-      { name: "description", content: "Find your anime soulmate. Match on archetypes, tropes and your Anime DNA in an adults-only, ID-verified community." },
+      { name: "description", content: "Swipe for your anime soulmate. Match on archetypes, tropes and Anime DNA in an adults-only, ID-verified community." },
       { property: "og:title", content: "WaifuMatch — Find your anime soulmate" },
-      { property: "og:description", content: "Archetype matching, Anime DNA profiles and Blind Date mode. 18+ only, ID verified." },
+      { property: "og:description", content: "Swipe on archetypes and anime taste. 18+ only, every profile ID verified." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -16,173 +19,147 @@ export const Route = createFileRoute("/")({
   component: Index,
 });
 
-const archetypes = [
-  { n: "Tsundere", jp: "ツンデレ", c: "bg-primary text-primary-foreground" },
-  { n: "Kuudere", jp: "クーデレ", c: "bg-secondary text-secondary-foreground" },
-  { n: "Genki", jp: "元気", c: "bg-accent text-accent-foreground" },
-  { n: "Dandere", jp: "ダンデレ", c: "bg-card text-card-foreground" },
-  { n: "Yandere", jp: "ヤンデレ", c: "bg-primary text-primary-foreground" },
-  { n: "Soft Boy", jp: "ソフト", c: "bg-secondary text-secondary-foreground" },
-  { n: "Rival Energy", jp: "ライバル", c: "bg-accent text-accent-foreground" },
-  { n: "Cool Beauty", jp: "クール", c: "bg-card text-card-foreground" },
-];
+type Profile = { name: string; age: number; img: string; archetype: string; match: number; watching: string; tags: string[]; why: string };
 
-const features = [
-  { icon: Sparkles, t: "Archetype Matching", jp: "相性", d: "Rank yourself and your ideal across classic archetypes. Tsundere × Soft Boy? We know the math.", c: "bg-primary text-primary-foreground", r: "-rotate-1" },
-  { icon: Heart, t: "Anime DNA", jp: "遺伝子", d: "Top 10, favourite characters, tropes, seasonal watchlist. Your profile is a character sheet.", c: "bg-card text-card-foreground", r: "rotate-1" },
-  { icon: EyeOff, t: "Blind Date Mode", jp: "目隠し", d: "No photos. Just vibes, archetypes and taste. Reveal when it clicks.", c: "bg-secondary text-secondary-foreground", r: "-rotate-1" },
-  { icon: Tv, t: "Watch Parties", jp: "一緒に", d: "Drop an invite for the new episode and scream at the cliffhanger together.", c: "bg-accent text-accent-foreground", r: "rotate-1" },
-  { icon: Dices, t: "Daily Soulmate Pull", jp: "ガチャ", d: "A gentle gacha of hand-picked matches every day. SSR soulmates only.", c: "bg-card text-card-foreground", r: "-rotate-1" },
-  { icon: ShieldCheck, t: "Verified Adults", jp: "安全", d: "Government ID + live selfie, reviewed before anyone can match or message.", c: "bg-primary text-primary-foreground", r: "rotate-1" },
+const PROFILES: Profile[] = [
+  { name: "Aiko", age: 24, img: aiko, archetype: "Tsundere", match: 92, watching: "Frieren S2", tags: ["Slow burn", "Enemies to lovers", "Steins;Gate"], why: "It's not like I wanted you to swipe right or anything…" },
+  { name: "Ren", age: 27, img: ren, archetype: "Kuudere", match: 87, watching: "Monster", tags: ["Psych thriller", "Found family", "Death Note"], why: "Quiet, observant, will remember your favourite OST." },
+  { name: "Kai", age: 25, img: kai, archetype: "Genki", match: 81, watching: "Haikyuu!!", tags: ["Sports anime", "Rivals", "Isekai"], why: "Will drag you to every cosplay con. Brings snacks." },
 ];
 
 function Petals() {
   return (
-    <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden>
-      {Array.from({ length: 16 }).map((_, i) => (
-        <span key={i} className="petal" style={{ left: `${((i * 37) % 100) + 5}%`, animationDuration: `${8 + (i % 5) * 2}s`, animationDelay: `${i * 0.7}s` }} />
+    <div className="pointer-events-none fixed inset-0 overflow-hidden" aria-hidden>
+      {Array.from({ length: 18 }).map((_, i) => (
+        <span key={i} className="petal" style={{ left: `${((i * 41) % 100) + 3}%`, animationDuration: `${9 + (i % 6) * 2}s`, animationDelay: `${i * 0.6}s` }} />
       ))}
     </div>
   );
 }
 
-function Index() {
+function SwipeCard({ p, top, onSwipe }: { p: Profile; top: boolean; onSwipe: (dir: "left" | "right") => void }) {
+  const [dx, setDx] = useState(0);
+  const [leaving, setLeaving] = useState<0 | 1 | -1>(0);
+  const start = useRef<number | null>(null);
+
+  const finish = (dir: "left" | "right") => {
+    setLeaving(dir === "right" ? 1 : -1);
+    setTimeout(() => onSwipe(dir), 250);
+  };
+
+  const x = leaving ? leaving * 600 : dx;
   return (
-    <main className="min-h-screen overflow-x-hidden bg-background font-sans text-foreground">
-      {/* Age gate ribbon */}
-      <div className="border-b-[3px] border-ink bg-accent py-2 text-center text-xs font-extrabold uppercase tracking-wide text-accent-foreground">
-        <ShieldCheck className="mr-1 inline h-4 w-4" />
-        18+ only — you must verify your identity to use WaifuMatch
+    <div
+      className="absolute inset-0 touch-none select-none overflow-hidden rounded-[var(--radius)] bg-card shadow-card"
+      style={{ transform: `translateX(${x}px) rotate(${x / 18}deg)`, transition: start.current === null ? "transform .25s ease-out" : "none", zIndex: top ? 2 : 1, scale: top ? "1" : "0.95" }}
+      onPointerDown={(e) => { if (!top) return; start.current = e.clientX; (e.target as HTMLElement).setPointerCapture(e.pointerId); }}
+      onPointerMove={(e) => { if (start.current !== null) setDx(e.clientX - start.current); }}
+      onPointerUp={() => {
+        start.current = null;
+        if (dx > 100) finish("right"); else if (dx < -100) finish("left"); else setDx(0);
+      }}
+    >
+      <img src={p.img} alt={`${p.name}, ${p.archetype} anime character`} width={768} height={1024} draggable={false} className="h-full w-full object-cover" />
+      <div className="bg-shade absolute inset-0" />
+
+      {dx > 30 && <span className="absolute left-5 top-8 -rotate-12 rounded-lg border-4 border-like px-3 py-1 font-display text-3xl text-like">好き LIKE</span>}
+      {dx < -30 && <span className="absolute right-5 top-8 rotate-12 rounded-lg border-4 border-nope px-3 py-1 font-display text-3xl text-nope">NOPE</span>}
+
+      <div className="absolute right-3 top-3 flex items-center gap-1 rounded-full bg-card/90 px-2.5 py-1 text-[11px] font-extrabold text-secondary-foreground">
+        <ShieldCheck className="h-3.5 w-3.5 text-primary" /> ID Verified • 18+
       </div>
 
-      <nav className="mx-auto flex max-w-6xl items-center justify-between px-5 py-4">
-        <span className="font-display text-2xl">
-          Waifu<span className="text-primary">Match</span>
-          <span className="ml-1 text-xs text-secondary">ワイフ</span>
-        </span>
-        <Link to="/" className="panel pop-press bg-primary px-4 py-2 text-sm font-extrabold text-primary-foreground">
-          Join ✦
-        </Link>
-      </nav>
-
-      {/* Hero */}
-      <section className="relative">
-        <div className="halftone absolute inset-0 opacity-40" aria-hidden />
-        <Petals />
-        <div className="relative mx-auto grid max-w-6xl items-center gap-10 px-5 pb-16 pt-6 md:grid-cols-[1.1fr_1fr] md:pt-12">
-          <div className="relative z-10">
-            <div className="panel inline-flex -rotate-2 items-center gap-2 bg-secondary px-3 py-1 text-xs font-extrabold text-secondary-foreground">
-              <ShieldCheck className="h-4 w-4" /> 18+ ONLY • ID VERIFIED
-            </div>
-            <p className="mt-6 font-display text-6xl leading-none text-primary opacity-90 md:text-7xl" aria-hidden>
-              運命の人
-            </p>
-            <h1 className="text-outline mt-2 font-display text-5xl leading-[1.05] md:text-7xl">
-              Find your <span className="text-accent">anime</span> soulmate.
-            </h1>
-            <p className="mt-6 max-w-md text-lg font-bold text-muted-foreground">
-              Matched by archetypes, tropes and the shows that broke your heart — not just a face. Every member is a verified adult.
-            </p>
-            <div className="mt-8 flex flex-wrap gap-4">
-              <Link to="/" className="panel pop-press bg-primary px-7 py-4 font-display text-lg text-primary-foreground">
-                Create your character →
-              </Link>
-              <a href="#safety" className="panel pop-press bg-card px-6 py-4 font-extrabold text-card-foreground">
-                How we verify
-              </a>
-            </div>
-          </div>
-
-          <div className="relative mx-auto w-full max-w-sm">
-            <div className="speedlines absolute -inset-10 rounded-full" aria-hidden />
-            <div className="panel relative rotate-2 overflow-hidden bg-card">
-              <img src={hero} alt="Pink-haired anime character winking and throwing a peace sign" width={1024} height={1280} className="block" />
-              <div className="absolute left-3 top-3 panel bg-accent px-2 py-1 text-xs font-extrabold text-accent-foreground">
-                GENKI ✦ ISEKAI ✦ SLOW BURN
-              </div>
-            </div>
-            {/* Speech bubble */}
-            <div className="panel wobble absolute -left-6 -top-6 bg-card px-4 py-2 font-display text-lg text-card-foreground md:-left-14">
-              ドキドキ!
-            </div>
-            {/* Match card */}
-            <div className="panel absolute -bottom-10 -left-4 right-6 -rotate-2 bg-ink p-4 text-foreground md:-left-16">
-              <div className="flex items-center justify-between">
-                <span className="font-display text-3xl text-accent">87%</span>
-                <span className="text-[10px] font-extrabold uppercase text-secondary">ID Verified • 18+</span>
-              </div>
-              <p className="mt-1 text-xs font-bold text-muted-foreground">
-                Both love psych thrillers · tsundere × soft energy · Steins;Gate in both top 5s
-              </p>
-            </div>
-          </div>
+      <div className="absolute inset-x-0 bottom-0 p-5 text-primary-foreground">
+        <div className="mb-2 inline-flex items-center gap-1 rounded-full bg-brand px-3 py-1 text-xs font-extrabold">
+          <Sparkles className="h-3.5 w-3.5" /> {p.match}% soulmate match
         </div>
-      </section>
+        <h2 className="font-display text-4xl">
+          {p.name} <span className="font-sans text-2xl font-normal">{p.age}</span>
+        </h2>
+        <p className="mt-1 text-sm font-bold opacity-90">{p.archetype} · <Tv className="inline h-3.5 w-3.5" /> Watching {p.watching}</p>
+        <p className="mt-2 text-sm opacity-90">{p.why}</p>
+        <div className="mt-3 flex flex-wrap gap-1.5">
+          {p.tags.map((t) => (
+            <span key={t} className="rounded-full border border-primary-foreground/40 bg-primary-foreground/15 px-2.5 py-1 text-xs font-bold backdrop-blur">{t}</span>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
 
-      {/* Marquee */}
-      <div className="mt-16 -rotate-1 overflow-hidden border-y-[3px] border-ink bg-primary py-3">
-        <div className="marquee flex w-max gap-8 whitespace-nowrap font-display text-xl text-primary-foreground">
-          {[0, 1].map((k) =>
-            ["ENEMIES TO LOVERS", "★", "SLOW BURN", "★", "FOUND FAMILY", "★", "ISEKAI", "★", "CHILDHOOD FRIENDS", "★", "RIVALS", "★"].map((t, i) => (
-              <span key={`${k}-${i}`}>{t}</span>
-            )),
+function Index() {
+  const [deck, setDeck] = useState(PROFILES);
+  const [matched, setMatched] = useState<Profile | null>(null);
+  const [key, setKey] = useState(0);
+
+  const swipe = (dir: "left" | "right") => {
+    const [first, ...rest] = deck;
+    if (!first) return;
+    if (dir === "right" && first.match >= 85) setMatched(first);
+    setDeck(rest);
+    setKey((k) => k + 1);
+  };
+
+  return (
+    <main className="sakura-sky relative min-h-screen font-sans text-foreground">
+      <Petals />
+      <div className="relative mx-auto flex min-h-screen max-w-md flex-col px-4 pb-24">
+        {/* Top bar */}
+        <header className="flex items-center justify-between py-4">
+          <button aria-label="Profile" className="rounded-full p-2 text-muted-foreground hover:bg-secondary"><User className="h-6 w-6" /></button>
+          <div className="flex items-center gap-1.5">
+            <Flame className="h-7 w-7 text-primary" fill="currentColor" />
+            <span className="text-brand font-display text-2xl">waifumatch</span>
+          </div>
+          <button aria-label="Messages" className="rounded-full p-2 text-muted-foreground hover:bg-secondary"><MessageCircle className="h-6 w-6" /></button>
+        </header>
+
+        <p className="mb-3 rounded-full bg-secondary px-4 py-1.5 text-center text-xs font-bold text-secondary-foreground">
+          🌸 18+ only — every profile is ID verified
+        </p>
+
+        {/* Deck */}
+        <div className="relative aspect-[3/4] w-full">
+          {deck.length === 0 ? (
+            <div className="flex h-full flex-col items-center justify-center rounded-[var(--radius)] border-2 border-dashed border-border bg-card/70 p-8 text-center">
+              <span className="font-display text-5xl text-primary">桜</span>
+              <h2 className="mt-3 font-display text-2xl">That's today's Soulmate Pull</h2>
+              <p className="mt-2 text-sm text-muted-foreground">New matches bloom tomorrow. Premium gets unlimited pulls.</p>
+              <button onClick={() => setDeck(PROFILES)} className="mt-6 rounded-full bg-brand px-6 py-3 font-extrabold text-primary-foreground shadow-card">Pull again</button>
+            </div>
+          ) : (
+            deck.slice(0, 2).reverse().map((p, i, arr) => (
+              <SwipeCard key={`${p.name}-${key}`} p={p} top={i === arr.length - 1} onSwipe={swipe} />
+            ))
           )}
         </div>
+
+        {/* Actions */}
+        <div className="mt-6 flex items-center justify-center gap-4">
+          <button aria-label="Rewind" onClick={() => setDeck(PROFILES)} className="grid h-12 w-12 place-items-center rounded-full bg-card text-primary-glow shadow-card transition hover:scale-110"><RotateCcw className="h-5 w-5" /></button>
+          <button aria-label="Nope" onClick={() => swipe("left")} className="grid h-16 w-16 place-items-center rounded-full bg-card text-nope shadow-card transition hover:scale-110"><X className="h-8 w-8" strokeWidth={3} /></button>
+          <button aria-label="Super like" onClick={() => swipe("right")} className="grid h-12 w-12 place-items-center rounded-full bg-card text-super shadow-card transition hover:scale-110"><Star className="h-5 w-5" fill="currentColor" /></button>
+          <button aria-label="Like" onClick={() => swipe("right")} className="grid h-16 w-16 place-items-center rounded-full bg-card text-like shadow-card transition hover:scale-110"><Heart className="h-8 w-8" fill="currentColor" /></button>
+        </div>
+
+        <div className="mt-8 text-center">
+          <button className="w-full rounded-full bg-brand py-4 font-extrabold text-primary-foreground shadow-card transition hover:brightness-110">Create your character</button>
+          <p className="mt-3 text-xs text-muted-foreground">You must be 18 or older and verify your identity to use WaifuMatch.</p>
+        </div>
       </div>
 
-      {/* Archetypes */}
-      <section className="mx-auto max-w-6xl px-5 py-20">
-        <h2 className="font-display text-4xl md:text-5xl">
-          Pick your <span className="text-secondary">type</span>.
-        </h2>
-        <p className="mt-2 font-bold text-muted-foreground">Rank yourself and your ideal partner. Opposites attract — or rivals do.</p>
-        <div className="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-4">
-          {archetypes.map((a, i) => (
-            <div key={a.n} className={`panel pop-press ${a.c} ${i % 2 ? "rotate-1" : "-rotate-1"} p-4`}>
-              <div className="font-display text-2xl leading-none">{a.jp}</div>
-              <div className="mt-2 text-sm font-extrabold uppercase">{a.n}</div>
-            </div>
-          ))}
+      {/* Match overlay */}
+      {matched && (
+        <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-ink/85 p-6 text-center text-primary-foreground backdrop-blur" onClick={() => setMatched(null)}>
+          <p className="pop-in font-display text-6xl text-brand">運命!</p>
+          <h2 className="pop-in mt-2 font-display text-4xl">It's a Match!</h2>
+          <img src={matched.img} alt={matched.name} width={768} height={1024} className="pop-in mt-6 h-40 w-40 rounded-full border-4 border-primary object-cover" />
+          <p className="mt-4 max-w-xs text-sm opacity-90">{matched.match}% — you both love {matched.tags[0].toLowerCase()} and {matched.tags[2]}.</p>
+          <button className="mt-6 rounded-full bg-brand px-8 py-3 font-extrabold shadow-card">Send an icebreaker</button>
+          <button className="mt-3 text-sm opacity-80">Keep swiping</button>
         </div>
-      </section>
-
-      {/* Features as manga panels */}
-      <section className="relative py-16">
-        <div className="halftone absolute inset-0 opacity-20" aria-hidden />
-        <div className="relative mx-auto grid max-w-6xl gap-6 px-5 sm:grid-cols-2 lg:grid-cols-3">
-          {features.map(({ icon: Icon, t, jp, d, c, r }) => (
-            <div key={t} className={`panel pop-press ${c} ${r} relative p-6`}>
-              <span className="absolute right-4 top-3 font-display text-3xl opacity-25">{jp}</span>
-              <Icon className="h-8 w-8" strokeWidth={2.5} />
-              <h3 className="mt-4 font-display text-2xl">{t}</h3>
-              <p className="mt-2 text-sm font-bold opacity-80">{d}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* Safety */}
-      <section id="safety" className="mx-auto max-w-6xl px-5 py-20">
-        <div className="panel bg-accent p-8 text-accent-foreground md:p-12">
-          <div className="flex items-center gap-3">
-            <Zap className="h-8 w-8" strokeWidth={3} />
-            <h2 className="font-display text-3xl md:text-4xl">Adults only. Seriously.</h2>
-          </div>
-          <ol className="mt-6 grid gap-4 md:grid-cols-3">
-            {["Confirm you're 18 or older", "Upload a government ID", "Take a live selfie — a human reviews it"].map((s, i) => (
-              <li key={s} className="panel bg-card p-4 font-extrabold text-card-foreground">
-                <span className="font-display text-3xl text-primary">0{i + 1}</span>
-                <p className="mt-1">{s}</p>
-              </li>
-            ))}
-          </ol>
-          <p className="mt-6 font-bold">No matching or messaging until you're approved. Report and block on every profile.</p>
-        </div>
-      </section>
-
-      <footer className="border-t-[3px] border-ink py-8 text-center text-xs font-bold text-muted-foreground">
-        WaifuMatch ワイフマッチ · Strictly for verified adults (18+)
-      </footer>
+      )}
     </main>
   );
 }
