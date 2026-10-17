@@ -612,6 +612,47 @@ export type Database = {
         }
         Relationships: []
       }
+      verification_sessions: {
+        Row: {
+          created_at: string
+          decision_at: string | null
+          id: string
+          provider: string
+          provider_session_id: string | null
+          status: string
+          user_id: string
+          verified_birth_date: string | null
+        }
+        Insert: {
+          created_at?: string
+          decision_at?: string | null
+          id?: string
+          provider?: string
+          provider_session_id?: string | null
+          status?: string
+          user_id: string
+          verified_birth_date?: string | null
+        }
+        Update: {
+          created_at?: string
+          decision_at?: string | null
+          id?: string
+          provider?: string
+          provider_session_id?: string | null
+          status?: string
+          user_id?: string
+          verified_birth_date?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "verification_sessions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
