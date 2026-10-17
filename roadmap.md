@@ -1,22 +1,24 @@
-# WaifuMatch roadmap
+# WaifuMatch completion roadmap
 
-## Done
-- [x] Card text legibility (stronger shade + ink shadow; all lines readable over light clothing)
-- [x] Communities page (`/communities`) — watch parties, clubs, seasonal buddy, convention companion, bingo, 12 niche features
-- [x] Top 10 picker (`/top10`) — Anime / Characters / Moves, live search over the full AniList catalog
-- [x] Compatibility dials — filler tolerance, dub vs sub, rewatch ratio, mood ring
-- [x] Tab bar on the main screen: Discover / Communities / Top 10
+## Stage 1 — Real accounts and safety
+- [ ] Google and Lovable sign-in, session-aware navigation and sign-out
+- [ ] Adult profile onboarding and account-saved Anime DNA
+- [ ] Private government ID upload and live camera selfie submission
+- [ ] Restricted reviewer queue and verified-only meeting eligibility
 
-## Next
-- [ ] Auth: email + Google, profiles, admin role
-- [ ] 18+ gate, government ID + live selfie upload, manual admin approval (owner approves all)
-- [ ] Onboarding: archetypes + Anime DNA (reuse the top-10 picker)
-- [ ] Discover: daily soulmate pull + compatibility breakdown + Blind Date mode
-- [ ] Matches, realtime chat, icebreakers
-- [ ] Reporting + moderation queue
-- [ ] Stripe premium, watch-party rooms (real), voice notes
+## Stage 2 — Dating
+- [ ] Real discovery, compatibility breakdown, daily pull and blind dates
+- [ ] Mutual matches, realtime messages, icebreakers and voice notes
+- [ ] Blocking, reporting and moderation
 
-## Notes
-- Anime/character search runs through `/api/public/catalog-search` (AniList GraphQL). Jikan/MyAnimeList is not reachable from this environment.
-- Picker choices save on-device (`wm-top10`) until accounts exist; then they move to the profile.
-- Demo profiles are placeholders until real accounts exist.
+## Stage 3 — Communities and premium
+- [ ] Persistent clubs, watch-party rooms, seasonal and convention buddies
+- [ ] Premium checkout and subscription management (requires payment setup)
+
+## Existing
+- [x] Sakura swipe UI, anime catalogue search, communities preview and Top 10 picker
+
+## Safety and release blockers
+- No account becomes a reviewer automatically; the owner must name the trusted reviewer account.
+- Manual verification is not automated identity/liveness certification; a verification service is needed for automated checks.
+- Sample profiles and community counts are not real people or live rooms.

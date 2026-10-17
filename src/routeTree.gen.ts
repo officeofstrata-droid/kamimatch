@@ -10,13 +10,27 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
+import { Route as AuthRouteImport } from './routes/auth'
 import { Route as CommunitiesRouteImport } from './routes/communities'
 import { Route as Top10RouteImport } from './routes/top10'
+import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
+import { Route as AuthenticatedReviewRouteImport } from './routes/_authenticated/review'
+import { Route as AuthenticatedVerifyRouteImport } from './routes/_authenticated/verify'
 import { Route as ApiPublicCatalogSearchRouteImport } from './routes/api/public/catalog-search'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CommunitiesRoute = CommunitiesRouteImport.update({
@@ -29,6 +43,21 @@ const Top10Route = Top10RouteImport.update({
   path: '/top10',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedProfileRoute = AuthenticatedProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedReviewRoute = AuthenticatedReviewRouteImport.update({
+  id: '/review',
+  path: '/review',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedVerifyRoute = AuthenticatedVerifyRouteImport.update({
+  id: '/verify',
+  path: '/verify',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const ApiPublicCatalogSearchRoute = ApiPublicCatalogSearchRouteImport.update({
   id: '/api/public/catalog-search',
   path: '/api/public/catalog-search',
@@ -37,34 +66,74 @@ const ApiPublicCatalogSearchRoute = ApiPublicCatalogSearchRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
   '/communities': typeof CommunitiesRoute
   '/top10': typeof Top10Route
+  '/profile': typeof AuthenticatedProfileRoute
+  '/review': typeof AuthenticatedReviewRoute
+  '/verify': typeof AuthenticatedVerifyRoute
   '/api/public/catalog-search': typeof ApiPublicCatalogSearchRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
   '/communities': typeof CommunitiesRoute
   '/top10': typeof Top10Route
+  '/profile': typeof AuthenticatedProfileRoute
+  '/review': typeof AuthenticatedReviewRoute
+  '/verify': typeof AuthenticatedVerifyRoute
   '/api/public/catalog-search': typeof ApiPublicCatalogSearchRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/auth': typeof AuthRoute
   '/communities': typeof CommunitiesRoute
   '/top10': typeof Top10Route
+  '/_authenticated/profile': typeof AuthenticatedProfileRoute
+  '/_authenticated/review': typeof AuthenticatedReviewRoute
+  '/_authenticated/verify': typeof AuthenticatedVerifyRoute
   '/api/public/catalog-search': typeof ApiPublicCatalogSearchRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/communities' | '/top10' | '/api/public/catalog-search'
+  fullPaths:
+    | '/'
+    | '/auth'
+    | '/communities'
+    | '/top10'
+    | '/profile'
+    | '/review'
+    | '/verify'
+    | '/api/public/catalog-search'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/communities' | '/top10' | '/api/public/catalog-search'
+  to:
+    | '/'
+    | '/auth'
+    | '/communities'
+    | '/top10'
+    | '/profile'
+    | '/review'
+    | '/verify'
+    | '/api/public/catalog-search'
   id:
-    '__root__' | '/' | '/communities' | '/top10' | '/api/public/catalog-search'
+    | '__root__'
+    | '/'
+    | '/_authenticated'
+    | '/auth'
+    | '/communities'
+    | '/top10'
+    | '/_authenticated/profile'
+    | '/_authenticated/review'
+    | '/_authenticated/verify'
+    | '/api/public/catalog-search'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  AuthRoute: typeof AuthRoute
   CommunitiesRoute: typeof CommunitiesRoute
   Top10Route: typeof Top10Route
   ApiPublicCatalogSearchRoute: typeof ApiPublicCatalogSearchRoute
@@ -77,6 +146,20 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/communities': {
@@ -93,6 +176,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof Top10RouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/profile': {
+      id: '/_authenticated/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof AuthenticatedProfileRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/review': {
+      id: '/_authenticated/review'
+      path: '/review'
+      fullPath: '/review'
+      preLoaderRoute: typeof AuthenticatedReviewRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/verify': {
+      id: '/_authenticated/verify'
+      path: '/verify'
+      fullPath: '/verify'
+      preLoaderRoute: typeof AuthenticatedVerifyRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/api/public/catalog-search': {
       id: '/api/public/catalog-search'
       path: '/api/public/catalog-search'
@@ -103,8 +207,25 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
+  AuthenticatedReviewRoute: typeof AuthenticatedReviewRoute
+  AuthenticatedVerifyRoute: typeof AuthenticatedVerifyRoute
+}
+
+const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedProfileRoute: AuthenticatedProfileRoute,
+  AuthenticatedReviewRoute: AuthenticatedReviewRoute,
+  AuthenticatedVerifyRoute: AuthenticatedVerifyRoute,
+}
+
+const AuthenticatedRouteRouteWithChildren =
+  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  AuthRoute: AuthRoute,
   CommunitiesRoute: CommunitiesRoute,
   Top10Route: Top10Route,
   ApiPublicCatalogSearchRoute: ApiPublicCatalogSearchRoute,
