@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { Check, LogOut, ShieldCheck, Sparkles } from 'lucide-react';
 import { getAccount, saveProfile } from '@/lib/account.functions';
 import { profileSchema } from '@/lib/account-rules';
+import { ProfileGallery } from '@/components/ProfileGallery';
 import { AccountShell } from '@/components/AccountShell';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -54,6 +55,7 @@ function ProfilePage() {
       {error && <p role="alert" className="text-sm text-destructive">{error}</p>}{notice && <p role="status" className="text-sm text-primary">{notice}</p>}
       <Button type="submit" disabled={busy} className="h-12 w-full rounded-full bg-brand font-bold">{busy ? 'Saving…' : 'Save my profile'}</Button>
     </form>
+    {account.profile && <ProfileGallery verified={account.identity?.status === 'approved'} />}
     <div className="mt-6 space-y-3"><Button asChild variant="outline" className="h-12 w-full rounded-full"><Link to="/top10"><Sparkles />Choose my top 10</Link></Button><Button asChild disabled={!account.details} className="h-12 w-full rounded-full"><Link to="/verify"><ShieldCheck />Verify my identity</Link></Button>{account.isAdmin && <Button asChild variant="outline" className="w-full"><Link to="/review">Identity review queue</Link></Button>}<Button onClick={signOut} variant="ghost" className="w-full text-muted-foreground"><LogOut />Sign out</Button></div>
   </AccountShell>;
 }

@@ -1,5 +1,10 @@
 # WaifuMatch completion roadmap
 
+## New sign-in and verification request
+- [ ] Apple sign-in
+- [ ] Discord sign-in — check supported providers
+- [ ] Persona or Veriff automated identity verification
+
 ## Stage 1 — Real accounts and safety
 - [x] Google and Lovable sign-in configured, session-aware navigation and sign-out implemented
 - [x] Adult profile onboarding and account-saved Anime DNA implemented

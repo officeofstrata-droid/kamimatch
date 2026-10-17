@@ -630,6 +630,10 @@ export type Database = {
       is_premium: { Args: { _user_id: string }; Returns: boolean }
       is_verified: { Args: { _user_id: string }; Returns: boolean }
       pair_blocked: { Args: { a: string; b: string }; Returns: boolean }
+      reserve_photo: {
+        Args: { _path: string; _style: string }
+        Returns: string
+      }
       rewind_swipe: { Args: never; Returns: boolean }
     }
     Enums: {
