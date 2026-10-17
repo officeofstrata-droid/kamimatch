@@ -1,6 +1,7 @@
 # WaifuMatch completion roadmap
 
 ## Current completion pass
+- [ ] Enable Stripe test payments, create Premium subscription and wire checkout; live payments require owner account claim
 - [ ] Finish moderation report queue and daily soulmate selection
 - [ ] Audit and repair account, discovery, community and media flows
 - [ ] Run rule tests and signed-in/public browser checks
