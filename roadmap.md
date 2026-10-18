@@ -1,5 +1,11 @@
 # KamiMatch completion roadmap
 
+## Live-use pass (18 Oct 2026)
+- [x] Removed sample swipe deck from the logged-out home page; replaced with a real landing page (how it works, features, safety)
+- [x] Removed sample character fallback images from discovery; members without a portrait see a neutral placeholder
+- [x] Confirmed no seeded database rows; 30 tests passed, build OK, security scans clean, published to kamimatch.co.uk
+- [x] Marketing research and plan saved to Project Files (marketing/research.md, marketing/plan.md)
+
 ## Phone installation and publishing
 - [x] Add home-screen installation manifest, local icons and phone head settings; no offline cache or native store distribution
 - [x] Set the web address before publishing — kamimatch.co.uk bought at one.com (99p), DNS A records and TXT verification confirmed at both root and www
