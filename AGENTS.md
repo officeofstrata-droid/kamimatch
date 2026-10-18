@@ -22,3 +22,4 @@
 - Safety report review lives in an authenticated reviewer-only route and checks the trusted role again on mutation, independently of RLS.
 - Keep Stripe access behind the shared gateway utility; authenticated payment functions bind customer and subscription metadata to the caller, and signed webhooks reconcile provider state through a service-only locked RPC.
 - Store test and live subscriptions separately by environment; only live paid-through memberships project into the database entitlement used by feature and storage policies, so test purchases cannot grant production access.
+- Use manifest-only home-screen installation with local PNG icons and root head links; do not add app-shell service workers because offline support was not requested.
