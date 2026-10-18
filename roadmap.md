@@ -2,7 +2,7 @@
 
 ## Phone installation and publishing
 - [x] Add home-screen installation manifest, local icons and phone head settings; no offline cache or native store distribution
-- [ ] Set the web address before publishing — owner will change it first; no custom domain connected yet, still on the default lovable.app address
+- [ ] Set the web address before publishing — owner bought kamimatch.co.uk (99p, another registrar); blocked: registry does not show the registration yet; connect once it appears
 - [ ] Publish — phone screen, manifest and icons checked; build OK and basic security checks passed; publishing approval declined
 
 ## Current completion pass
