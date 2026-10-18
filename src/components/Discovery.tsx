@@ -8,10 +8,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Petals } from '@/components/Petals';
 import { useSession } from '@/components/SessionProvider';
-import aiko from '@/assets/char-aiko.jpg';
-import ren from '@/assets/char-ren.jpg';
-import kai from '@/assets/char-kai.jpg';
-const avatars:Record<string,string>={aiko,ren,kai};
 export function Discovery(){
  const {user}=useSession();const load=useServerFn(getDating),cast=useServerFn(swipeMember),rewind=useServerFn(rewindMember),report=useServerFn(reportMember),block=useServerFn(blockMember);const client=useQueryClient();
  const query=useQuery({queryKey:['dating',user?.id],queryFn:()=>load(),enabled:!!user,refetchInterval:240000});
