@@ -3,9 +3,9 @@ import { createStripeClient, type StripeEnv } from '@/lib/stripe.server';
 import { PREMIUM_PRICE_ID } from '@/lib/payment-rules';
 import { z } from 'zod';
 export async function syncSubscription(subscription: Stripe.Subscription, environment: StripeEnv, eventCreated: number) {
-  const userId = z.string().uuid().parse(subscription.metadata.userId);
+  const userId = z.string().uuid().parse(subscription.metadata['userId']);
   const item = subscription.items.data[0];
-  if (!item || (item.price.lookup_key ?? item.price.metadata.lovable_external_id) !== PREMIUM_PRICE_ID) return;
+  if (!item || (item.price.lookup_key ?? item.price.metadata['lovable_external_id']) !== PREMIUM_PRICE_ID) return;
   const customerId = typeof subscription.customer === 'string' ? subscription.customer : subscription.customer.id;
   const { supabaseAdmin } = await import('@/integrations/supabase/client.server');
   const result = await supabaseAdmin.rpc('sync_payment_subscription', {
@@ -18,7 +18,7 @@ export async function syncSubscription(subscription: Stripe.Subscription, enviro
 }
 export async function reconcileSubscription(id: string, environment: StripeEnv, userId?: string, eventCreated = Math.floor(Date.now() / 1000)) {
   const subscription = await createStripeClient(environment).subscriptions.retrieve(id);
-  if (userId && subscription.metadata.userId !== userId) throw new Error('This subscription does not belong to your account.');
+  if (userId && subscription.metadata['userId'] !== userId) throw new Error('This subscription does not belong to your account.');
   await syncSubscription(subscription, environment, eventCreated);
   return subscription;
 }

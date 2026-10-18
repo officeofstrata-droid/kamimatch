@@ -12,9 +12,9 @@ export const getDating=createServerFn({method:'GET'}).middleware([requireSupabas
  if(daily.error)throw new Error('Your daily connection could not be loaded.');
  const seen=new Set((swipes.data??[]).map(row=>row.target_id));
  const candidates=await Promise.all((profiles.data??[]).filter(row=>!seen.has(row.id)).map(async row=>{
- const eligible=await supabase.rpc('is_verified',{_user_id:row.id});
- if(eligible.error)throw new Error('Member eligibility could not be checked.');
- if(!eligible.data)return null;
+ const [eligible,blocked]=await Promise.all([supabase.rpc('is_verified',{_user_id:row.id}),supabase.rpc('pair_blocked',{a:userId,b:row.id})]);
+ if(eligible.error||blocked.error)throw new Error('Member eligibility could not be checked.');
+ if(!eligible.data||blocked.data)return null;
  const [taste,media]=await Promise.all([supabase.from('anime_preferences').select('*').eq('user_id',row.id).maybeSingle(),supabase.from('profile_media').select('path,kind').eq('user_id',row.id).order('created_at').limit(5)]);
  if(taste.error||media.error)throw new Error('Member details could not be loaded.');
  const photos=await Promise.all((media.data??[]).filter(x=>x.kind==='anime_photo').map(async x=>(await supabase.storage.from('profile-media').createSignedUrl(x.path,300)).data?.signedUrl));

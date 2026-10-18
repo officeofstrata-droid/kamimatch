@@ -12,7 +12,7 @@ import { StripeEmbeddedCheckout } from '@/components/StripeEmbeddedCheckout';
 import { confirmCheckout, createCheckoutSession, createPortalSession, getBilling } from '@/lib/payments.functions';
 import { getStripeEnvironment } from '@/lib/stripe';
 const options=queryOptions({queryKey:['premium'],queryFn:()=>getMedia()});
-export const Route=createFileRoute('/_authenticated/premium')({validateSearch:(search:Record<string,unknown>)=>({session_id:typeof search.session_id==='string'&&/^cs_[a-zA-Z0-9_]+$/.test(search.session_id)?search.session_id:undefined}),loader:({context})=>context.queryClient.ensureQueryData(options),head:()=>({meta:[{title:'Free & Premium — WaifuMatch'},{name:'description',content:'Core dating stays free. Compare anime portraits, videos and premium extras.'},{property:'og:title',content:'Free & Premium — WaifuMatch'},{property:'og:description',content:'Generous free dating and optional premium extras.'},{property:'og:type',content:'website'},{name:'twitter:card',content:'summary_large_image'},{name:'robots',content:'noindex, nofollow'}]}),component:Premium});
+export const Route=createFileRoute('/_authenticated/premium')({validateSearch:(search:Record<string,unknown>):{session_id?:string}=>typeof search['session_id']==='string'&&/^cs_[a-zA-Z0-9_]+$/.test(search['session_id'])?{session_id:search['session_id']}:{},loader:({context})=>context.queryClient.ensureQueryData(options),head:()=>({meta:[{title:'Free & Premium — WaifuMatch'},{name:'description',content:'Core dating stays free. Compare anime portraits, videos and premium extras.'},{property:'og:title',content:'Free & Premium — WaifuMatch'},{property:'og:description',content:'Generous free dating and optional premium extras.'},{property:'og:type',content:'website'},{name:'twitter:card',content:'summary_large_image'},{name:'robots',content:'noindex, nofollow'}]}),component:Premium});
 function Premium(){
  const {data}=useSuspenseQuery(options);
  const {session_id:sessionId}=Route.useSearch();
@@ -21,7 +21,7 @@ function Premium(){
  const [busy,setBusy]=useState(false);
  const [error,setError]=useState('');
  const [notice,setNotice]=useState('');
- const token=import.meta.env.VITE_PAYMENTS_CLIENT_TOKEN;
+ const token=import.meta.env['VITE_PAYMENTS_CLIENT_TOKEN'];
  const environment=token?.startsWith('pk_test_')?'sandbox':token?.startsWith('pk_live_')?'live':undefined;
  const billing=useQuery({queryKey:['billing',environment],enabled:!!environment,queryFn:()=>getBilling({data:{environment:getStripeEnvironment()}}),refetchInterval:clientSecret||sessionId?5000:false});
  useEffect(()=>{

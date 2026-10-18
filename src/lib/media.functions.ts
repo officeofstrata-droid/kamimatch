@@ -6,7 +6,7 @@ import { requireSupabaseAuth } from '@/integrations/supabase/auth-middleware';
 export const getMedia = createServerFn({ method: 'GET' }).middleware([requireSupabaseAuth]).handler(async ({ context }) => {
  const { supabase, userId } = context;
  const now=new Date();
- const [rows,premium,jobs] = await Promise.all([supabase.from('profile_media').select('*').eq('user_id',userId).order('created_at'),supabase.rpc('is_premium',{_user_id:userId}),supabase.from('photo_jobs').select('id,status,created_at').eq('user_id',userId).gte('created_at',new Date(Date.UTC(now.getUTCFullYear(),now.getUTCMonth(),1)).toISOString())]);
+ const [rows,premium,jobs] = await Promise.all([supabase.from('profile_media').select('*').eq('user_id',userId).order('created_at'),supabase.rpc('is_premium',{_user_id:userId}),supabase.from('photo_jobs').select('id,status,created_at').eq('user_id',userId).neq('status','failed').gte('created_at',new Date(Date.UTC(now.getUTCFullYear(),now.getUTCMonth(),1)).toISOString())]);
  if(rows.error || premium.error || jobs.error) throw new Error('Your gallery could not be loaded.');
  const media = await Promise.all((rows.data??[]).map(async row=>({ ...row, url:(await supabase.storage.from('profile-media').createSignedUrl(row.path,300)).data?.signedUrl })));
  return {media,premium:premium.data===true,used:jobs.data?.length??0};

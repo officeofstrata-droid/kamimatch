@@ -1,5 +1,5 @@
 import { loadStripe, type Stripe } from '@stripe/stripe-js';
-const clientToken = import.meta.env.VITE_PAYMENTS_CLIENT_TOKEN;
+const clientToken = import.meta.env['VITE_PAYMENTS_CLIENT_TOKEN'];
 type StripeEnv = 'sandbox' | 'live';
 export function getStripeEnvironment(): StripeEnv {
   if (clientToken?.startsWith('pk_test_')) return 'sandbox';

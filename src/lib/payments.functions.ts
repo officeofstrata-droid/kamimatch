@@ -13,13 +13,14 @@ async function resolveOrCreateCustomer(
   if (options.userId && !/^[a-zA-Z0-9_-]+$/.test(options.userId)) throw new Error('Invalid userId');
   if (options.userId) {
     const found = await stripe.customers.search({ query: `metadata['userId']:'${options.userId}'`, limit: 1 });
-    if (found.data.length) return found.data[0].id;
+    const first = found.data[0];
+    if (first) return first.id;
   }
   if (options.email) {
     const existing = await stripe.customers.list({ email: options.email, limit: 1 });
-    if (existing.data.length) {
-      const customer = existing.data[0];
-      if (options.userId && customer.metadata?.userId !== options.userId) {
+    const customer = existing.data[0];
+    if (customer) {
+      if (options.userId && customer.metadata?.['userId'] !== options.userId) {
         await stripe.customers.update(customer.id, { metadata: { ...customer.metadata, userId: options.userId } });
       }
       return customer.id;
@@ -43,7 +44,8 @@ export const createCheckoutSession = createServerFn({ method: 'POST' }).middlewa
       if (profile.error || !profile.data) throw new Error('Save your adult profile before subscribing.');
       const stripe = createStripeClient(data.environment);
       const auth = await context.supabase.auth.getUser();
-      const customer = await resolveOrCreateCustomer(stripe, { userId: context.userId, email: auth.data.user?.email });
+      const email = auth.data.user?.email;
+      const customer = await resolveOrCreateCustomer(stripe, { userId: context.userId, ...(email && { email }) });
       const subscriptions = await stripe.subscriptions.list({ customer, status: 'all', limit: 100 });
       if (subscriptions.data.some(sub => ['active', 'trialing', 'past_due', 'incomplete', 'unpaid', 'paused'].includes(sub.status))) throw new Error('You already have a subscription. Manage it instead of purchasing again.');
       const prices = await stripe.prices.list({ lookup_keys: [PREMIUM_PRICE_ID], active: true });
@@ -53,7 +55,7 @@ export const createCheckoutSession = createServerFn({ method: 'POST' }).middlewa
       if (price.tax_behavior === 'exclusive') throw new Error('Premium needs a tax-inclusive price before checkout can open.');
       // Reuse an open session and serialize creation through a time-window idempotency key.
       const sessions = await stripe.checkout.sessions.list({ customer, status: 'open', limit: 10 });
-      const existing = sessions.data.find(session => session.metadata?.userId === context.userId && session.client_secret && session.mode === 'subscription');
+      const existing = sessions.data.find(session => session.metadata?.['userId'] === context.userId && session.client_secret && session.mode === 'subscription');
       if (existing?.client_secret) return { clientSecret: existing.client_secret };
       const session = await stripe.checkout.sessions.create({
         ui_mode: 'embedded_page', mode: 'subscription', customer,
@@ -71,7 +73,7 @@ export const confirmCheckout = createServerFn({ method: 'POST' }).middleware([re
   .handler(async ({ data, context }) => {
     try {
       const session = await createStripeClient(data.environment).checkout.sessions.retrieve(data.sessionId);
-      if (session.metadata?.userId !== context.userId) throw new Error('This payment does not belong to your account.');
+      if (session.metadata?.['userId'] !== context.userId) throw new Error('This payment does not belong to your account.');
       if (session.status !== 'complete' || session.payment_status === 'unpaid') return { pending: true };
       const id = typeof session.subscription === 'string' ? session.subscription : session.subscription?.id;
       if (!id) throw new Error('No subscription was found for this payment.');
