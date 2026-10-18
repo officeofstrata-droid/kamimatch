@@ -13,7 +13,7 @@ export const profileSchema = z.object({
   birth_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
   bio: z.string().trim().max(500), city: z.string().trim().max(80),
   archetype: z.string().max(150), watching: z.string().max(100),
-  avatar: z.enum(['aiko', 'ren', 'kai']), consent: z.literal(true),
+  consent: z.literal(true),
 }).superRefine((data, ctx) => {
   const age = ageOn(data.birth_date);
   if (age < 18 || age > 120) ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['birth_date'], message: 'You must be at least 18 years old.' });
