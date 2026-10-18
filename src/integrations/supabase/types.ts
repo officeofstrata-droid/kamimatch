@@ -421,6 +421,38 @@ export type Database = {
           },
         ]
       }
+      photo_reveals: {
+        Row: {
+          created_at: string
+          id: string
+          match_id: string
+          owner_id: string
+          path: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          match_id: string
+          owner_id: string
+          path: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          match_id?: string
+          owner_id?: string
+          path?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "photo_reveals_match_id_fkey"
+            columns: ["match_id"]
+            isOneToOne: false
+            referencedRelation: "matches"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profile_media: {
         Row: {
           created_at: string
@@ -763,6 +795,10 @@ export type Database = {
       pair_blocked: { Args: { a: string; b: string }; Returns: boolean }
       reserve_photo: {
         Args: { _path: string; _style: string }
+        Returns: string
+      }
+      reserve_reveal: {
+        Args: { _match_id: string; _path: string }
         Returns: string
       }
       rewind_swipe: { Args: never; Returns: boolean }
