@@ -104,3 +104,18 @@ export const refreshBilling = createServerFn({ method: 'POST' }).middleware([req
    return { ok: true };
   } catch (error) { return { error: getStripeErrorMessage(error) }; }
  });
+export const setRenewal = createServerFn({ method: 'POST' }).middleware([requireSupabaseAuth])
+ .inputValidator(input => inputSchema.extend({ cancel: z.boolean() }).parse(input)).handler(async ({ data, context }) => {
+  try {
+   const rows = await context.supabase.from('payment_subscriptions').select('*').eq('user_id', context.userId).eq('environment', data.environment).order('updated_at', { ascending: false });
+   if (rows.error) throw new Error('Your subscription could not be loaded.');
+   const row = rows.data?.find(item => paidAccess(item.status, item.current_period_end) && item.status !== 'canceled');
+   if (!row) throw new Error('No renewable subscription found.');
+   const stripe = createStripeClient(data.environment);
+   const subscription = await stripe.subscriptions.retrieve(row.provider_subscription_id);
+   if (subscription.metadata['userId'] !== context.userId) throw new Error('Subscription ownership could not be verified.');
+   await stripe.subscriptions.update(subscription.id, { cancel_at_period_end: data.cancel });
+   await reconcileSubscription(subscription.id, data.environment, context.userId);
+   return { ok: true };
+  } catch (error) { return { error: getStripeErrorMessage(error) }; }
+ });
