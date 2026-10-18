@@ -19,7 +19,8 @@
 - [x] Replace Veriff with Didit sessions, signed decision handling and adult ID/selfie checks; free allowance confirmed
 - [x] Apple sign-in enabled; sign-in button respects adult consent
 - [x] Discord support checked — unavailable as a managed sign-in provider; no fake button
-- [ ] Activate and test Didit — API key, workflow ID and webhook signing secret saved; remaining: owner sets the webhook URL in Didit (https://kamimatch.co.uk/api/public/didit-webhook) and one real identity check is completed
+- [x] Activate Didit — API key, workflow ID and webhook signing secret saved; webhook URL set in Didit; live endpoint verified (rejects unsigned calls with 401 after republish)
+- [ ] Complete one real identity check end to end — blocked: an owner-run Didit session on a real account
 
 ## Stage 1 — Real accounts and safety
 - [x] Google and Lovable sign-in configured, session-aware navigation and sign-out implemented
