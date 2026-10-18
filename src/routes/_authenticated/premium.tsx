@@ -9,10 +9,11 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { PaymentTestModeBanner } from '@/components/PaymentTestModeBanner';
 import { StripeEmbeddedCheckout } from '@/components/StripeEmbeddedCheckout';
-import { confirmCheckout, createCheckoutSession, createPortalSession, getBilling } from '@/lib/payments.functions';
+import { confirmCheckout, createCheckoutSession, createPortalSession, getBilling, refreshBilling, setRenewal } from '@/lib/payments.functions';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { getStripeEnvironment } from '@/lib/stripe';
 const options=queryOptions({queryKey:['premium'],queryFn:()=>getMedia()});
-export const Route=createFileRoute('/_authenticated/premium')({validateSearch:(search:Record<string,unknown>)=>({session_id:typeof search.session_id==='string'&&/^cs_[a-zA-Z0-9_]+$/.test(search.session_id)?search.session_id:undefined}),loader:({context})=>context.queryClient.ensureQueryData(options),head:()=>({meta:[{title:'Free & Premium — WaifuMatch'},{name:'description',content:'Core dating stays free. Compare anime portraits, videos and premium extras.'},{property:'og:title',content:'Free & Premium — WaifuMatch'},{property:'og:description',content:'Generous free dating and optional premium extras.'},{property:'og:type',content:'website'},{name:'twitter:card',content:'summary_large_image'},{name:'robots',content:'noindex, nofollow'}]}),component:Premium});
+export const Route=createFileRoute('/_authenticated/premium')({validateSearch:(search:Record<string,unknown>):{session_id?:string}=>typeof search['session_id']==='string'&&/^cs_[a-zA-Z0-9_]+$/.test(search['session_id'])?{session_id:search['session_id']}:{},loader:({context})=>context.queryClient.ensureQueryData(options),head:()=>({meta:[{title:'Free & Premium — WaifuMatch'},{name:'description',content:'Core dating stays free. Compare anime portraits, videos and premium extras.'},{property:'og:title',content:'Free & Premium — WaifuMatch'},{property:'og:description',content:'Generous free dating and optional premium extras.'},{property:'og:type',content:'website'},{name:'twitter:card',content:'summary_large_image'},{name:'robots',content:'noindex, nofollow'}]}),component:Premium});
 function Premium(){
  const {data}=useSuspenseQuery(options);
  const {session_id:sessionId}=Route.useSearch();
@@ -21,9 +22,16 @@ function Premium(){
  const [busy,setBusy]=useState(false);
  const [error,setError]=useState('');
  const [notice,setNotice]=useState('');
- const token=import.meta.env.VITE_PAYMENTS_CLIENT_TOKEN;
+ const token=import.meta.env['VITE_PAYMENTS_CLIENT_TOKEN'];
  const environment=token?.startsWith('pk_test_')?'sandbox':token?.startsWith('pk_live_')?'live':undefined;
  const billing=useQuery({queryKey:['billing',environment],enabled:!!environment,queryFn:()=>getBilling({data:{environment:getStripeEnvironment()}}),refetchInterval:clientSecret||sessionId?5000:false});
+ useEffect(()=>{
+  if(!environment)return;
+  let mounted=true;
+  const refresh=()=>{void refreshBilling({data:{environment}}).then(result=>{if(!mounted)return;if('error'in result)setError(result.error??'Subscription could not be checked.');else{void queryClient.invalidateQueries({queryKey:['billing']});void queryClient.invalidateQueries({queryKey:['premium']});}}).catch(()=>{if(mounted)setError('Subscription could not be checked.');});};
+  refresh();window.addEventListener('focus',refresh);
+  return()=>{mounted=false;window.removeEventListener('focus',refresh);};
+ },[environment,queryClient]);
  useEffect(()=>{
   if(!sessionId||!environment)return;
   let active=true;
@@ -37,6 +45,7 @@ function Premium(){
  },[sessionId,environment,queryClient]);
  async function checkout(){setBusy(true);setError('');try{const result=await createCheckoutSession({data:{environment:getStripeEnvironment()}});if('error'in result)throw new Error(result.error);setClientSecret(result.clientSecret);}catch(e){setError(e instanceof Error?e.message:'Checkout could not open.');}finally{setBusy(false);}}
  async function manage(){setBusy(true);setError('');const tab=window.open('about:blank','_blank');try{const result=await createPortalSession({data:{environment:getStripeEnvironment()}});if('error'in result)throw new Error(result.error);if(tab){tab.opener=null;tab.location.href=result.url;}else throw new Error('Allow pop-up windows to manage your subscription.');}catch(e){tab?.close();setError(e instanceof Error?e.message:'Subscription settings could not open.');}finally{setBusy(false);}}
+ async function renewal(cancel:boolean){setBusy(true);setError('');try{const result=await setRenewal({data:{environment:getStripeEnvironment(),cancel}});if('error'in result)throw new Error(result.error);setNotice(cancel?'Renewal canceled. Premium stays active until your paid month ends.':'Monthly renewal restored.');await queryClient.invalidateQueries({queryKey:['billing']});}catch(e){setError(e instanceof Error?e.message:'Renewal could not be changed.');}finally{setBusy(false);}}
  const subscription=billing.data?.subscription;
  return <><PaymentTestModeBanner/><AccountShell title="More magic, not more pressure"><div className="flex items-center gap-2 text-primary"><Crown/><p className="font-bold">{data.premium?'Premium active':billing.data?.active&&environment==='sandbox'?'Test Premium subscription active':'Your plan: Free'}</p></div>
  {notice&&<p role="status" className="mt-4 text-sm">{notice}</p>}
@@ -46,6 +55,7 @@ function Premium(){
  <section className="mt-6"><h2 className="font-display text-2xl">Free · £0</h2><ul className="mt-4 space-y-3">{FREE_FEATURES.map(x=><li key={x} className="flex gap-2 text-sm"><Check className="h-4 w-4 shrink-0 text-primary"/>{x}</li>)}</ul></section>
  <section className="mt-8 border-t border-border pt-6"><h2 className="font-display text-2xl">Premium · £{PREMIUM_MONTHLY_GBP.toFixed(2)} / month</h2><p className="mt-2 text-sm text-muted-foreground">Tax included. Renews monthly. Cancel anytime; keep access until your paid month ends. Identity approval is still required for dating and videos.</p><ul className="mt-4 space-y-3">{PREMIUM_FEATURES.map(x=><li key={x} className="flex gap-2 text-sm"><Crown className="h-4 w-4 shrink-0 text-primary"/>{x}</li>)}</ul>
  {subscription&&<Button className="mt-6 w-full" variant="outline" disabled={busy} onClick={manage}><Crown/>Manage subscription</Button>}
+ {billing.data?.active&&subscription?.status!=='canceled'&&(subscription?.cancel_at_period_end?<Button className="mt-3 w-full" variant="outline" disabled={busy} onClick={()=>renewal(false)}>Keep Premium renewal</Button>:<AlertDialog><AlertDialogTrigger asChild><Button className="mt-3 w-full" variant="ghost" disabled={busy}>Cancel renewal</Button></AlertDialogTrigger><AlertDialogContent><AlertDialogHeader><AlertDialogTitle>Cancel monthly renewal?</AlertDialogTitle><AlertDialogDescription>You will not be charged again. Your Premium access stays active until the end of this paid billing period.</AlertDialogDescription></AlertDialogHeader><AlertDialogFooter><AlertDialogCancel>Keep renewal</AlertDialogCancel><AlertDialogAction onClick={()=>renewal(true)}>Confirm cancellation</AlertDialogAction></AlertDialogFooter></AlertDialogContent></AlertDialog>)}
  {!billing.data?.active&&!clientSecret&&<Button className="mt-6 w-full" disabled={busy||!environment||billing.isPending} onClick={checkout}><Crown/>{busy?'Opening checkout…':environment==='sandbox'?'Try Premium · test payment':'Get Premium · £7.99 / month'}</Button>}
  </section></AccountShell>{clientSecret&&<section aria-label="Premium checkout" className="relative mx-auto w-full max-w-3xl px-3 pb-12"><Button variant="ghost" onClick={()=>setClientSecret(undefined)} className="mb-4">Close checkout</Button><StripeEmbeddedCheckout clientSecret={clientSecret}/></section>}</>;
 }

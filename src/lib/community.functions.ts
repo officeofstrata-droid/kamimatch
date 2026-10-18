@@ -4,9 +4,10 @@ import { requireSupabaseAuth } from '@/integrations/supabase/auth-middleware';
 import { roomSchema } from '@/lib/community-rules';
 
 export const getRooms=createServerFn({method:'GET'}).middleware([requireSupabaseAuth]).handler(async({context})=>{
- const [rooms,members,bingo,verified]=await Promise.all([context.supabase.from('community_rooms').select('*,room_members(count)').order('created_at',{ascending:false}).limit(100),context.supabase.from('room_members').select('room_id').eq('user_id',context.userId),context.supabase.from('bingo_progress').select('cells').eq('user_id',context.userId).maybeSingle(),context.supabase.rpc('is_verified',{_user_id:context.userId})]);
+ const [rooms,members,bingo,verified]=await Promise.all([context.supabase.from('community_rooms').select('*').order('created_at',{ascending:false}).limit(100),context.supabase.from('room_members').select('room_id').eq('user_id',context.userId),context.supabase.from('bingo_progress').select('cells').eq('user_id',context.userId).maybeSingle(),context.supabase.rpc('is_verified',{_user_id:context.userId})]);
  if(rooms.error || members.error || bingo.error || verified.error) throw new Error('Communities could not be loaded.');
- return {rooms:(rooms.data??[]).map(room=>({...room,memberCount:room.room_members[0]?.count??0,joined:(members.data??[]).some(m=>m.room_id===room.id)})),bingo:bingo.data?.cells??[],verified:verified.data===true};
+ const listed=await Promise.all((rooms.data??[]).map(async room=>{const count=await context.supabase.rpc('room_member_count',{_room:room.id});if(count.error)throw new Error('Room attendance could not be loaded.');return {...room,memberCount:count.data??0,joined:(members.data??[]).some(m=>m.room_id===room.id)};}));
+ return {rooms:listed,bingo:bingo.data?.cells??[],verified:verified.data===true};
 });
 export const createRoom=createServerFn({method:'POST'}).middleware([requireSupabaseAuth]).inputValidator(input=>roomSchema.parse(input)).handler(async({data,context})=>{
  const room=await context.supabase.from('community_rooms').insert({...data,owner_id:context.userId,starts_at:data.starts_at?new Date(data.starts_at).toISOString():null}).select('id').single();

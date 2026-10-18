@@ -13,13 +13,14 @@ async function resolveOrCreateCustomer(
   if (options.userId && !/^[a-zA-Z0-9_-]+$/.test(options.userId)) throw new Error('Invalid userId');
   if (options.userId) {
     const found = await stripe.customers.search({ query: `metadata['userId']:'${options.userId}'`, limit: 1 });
-    if (found.data.length) return found.data[0].id;
+    const first = found.data[0];
+    if (first) return first.id;
   }
   if (options.email) {
     const existing = await stripe.customers.list({ email: options.email, limit: 1 });
-    if (existing.data.length) {
-      const customer = existing.data[0];
-      if (options.userId && customer.metadata?.userId !== options.userId) {
+    const customer = existing.data[0];
+    if (customer) {
+      if (options.userId && customer.metadata?.['userId'] !== options.userId) {
         await stripe.customers.update(customer.id, { metadata: { ...customer.metadata, userId: options.userId } });
       }
       return customer.id;
@@ -43,7 +44,8 @@ export const createCheckoutSession = createServerFn({ method: 'POST' }).middlewa
       if (profile.error || !profile.data) throw new Error('Save your adult profile before subscribing.');
       const stripe = createStripeClient(data.environment);
       const auth = await context.supabase.auth.getUser();
-      const customer = await resolveOrCreateCustomer(stripe, { userId: context.userId, email: auth.data.user?.email });
+      const email = auth.data.user?.email;
+      const customer = await resolveOrCreateCustomer(stripe, { userId: context.userId, ...(email && { email }) });
       const subscriptions = await stripe.subscriptions.list({ customer, status: 'all', limit: 100 });
       if (subscriptions.data.some(sub => ['active', 'trialing', 'past_due', 'incomplete', 'unpaid', 'paused'].includes(sub.status))) throw new Error('You already have a subscription. Manage it instead of purchasing again.');
       const prices = await stripe.prices.list({ lookup_keys: [PREMIUM_PRICE_ID], active: true });
@@ -53,15 +55,15 @@ export const createCheckoutSession = createServerFn({ method: 'POST' }).middlewa
       if (price.tax_behavior === 'exclusive') throw new Error('Premium needs a tax-inclusive price before checkout can open.');
       // Reuse an open session and serialize creation through a time-window idempotency key.
       const sessions = await stripe.checkout.sessions.list({ customer, status: 'open', limit: 10 });
-      const existing = sessions.data.find(session => session.metadata?.userId === context.userId && session.client_secret && session.mode === 'subscription');
+      const existing = sessions.data.find(session => session.metadata?.['userId'] === context.userId && session.client_secret && session.mode === 'subscription');
       if (existing?.client_secret) return { clientSecret: existing.client_secret };
       const session = await stripe.checkout.sessions.create({
         ui_mode: 'embedded_page', mode: 'subscription', customer,
         line_items: [{ price: price.id, quantity: 1 }],
-        automatic_tax: { enabled: true },
+        automatic_tax: { enabled: true }, customer_update: { address: 'auto' },
         return_url: `${new URL(getRequest().url).origin}/premium?session_id={CHECKOUT_SESSION_ID}`,
         metadata: { userId: context.userId }, subscription_data: { metadata: { userId: context.userId } },
-      }, { idempotencyKey: `premium-${data.environment}-${context.userId}-${Math.floor(Date.now() / 600000)}` });
+      }, { idempotencyKey: `premium-address-${data.environment}-${context.userId}-${Math.floor(Date.now() / 600000)}` });
       if (!session.client_secret) throw new Error('Stripe did not return a checkout form.');
       return { clientSecret: session.client_secret };
     } catch (error) { return { error: getStripeErrorMessage(error) }; }
@@ -71,7 +73,7 @@ export const confirmCheckout = createServerFn({ method: 'POST' }).middleware([re
   .handler(async ({ data, context }) => {
     try {
       const session = await createStripeClient(data.environment).checkout.sessions.retrieve(data.sessionId);
-      if (session.metadata?.userId !== context.userId) throw new Error('This payment does not belong to your account.');
+      if (session.metadata?.['userId'] !== context.userId) throw new Error('This payment does not belong to your account.');
       if (session.status !== 'complete' || session.payment_status === 'unpaid') return { pending: true };
       const id = typeof session.subscription === 'string' ? session.subscription : session.subscription?.id;
       if (!id) throw new Error('No subscription was found for this payment.');
@@ -84,7 +86,36 @@ export const createPortalSession = createServerFn({ method: 'POST' }).middleware
     try {
       const rows = await context.supabase.from('payment_subscriptions').select('provider_customer_id').eq('user_id', context.userId).eq('environment', data.environment).order('updated_at', { ascending: false }).limit(1).maybeSingle();
       if (rows.error || !rows.data) throw new Error('No subscription found.');
-      const portal = await createStripeClient(data.environment).billingPortal.sessions.create({ customer: rows.data.provider_customer_id, return_url: `${new URL(getRequest().url).origin}/premium` });
+      const stripe = createStripeClient(data.environment);
+      const configurations = await stripe.billingPortal.configurations.list({ limit: 100 });
+      const existing = configurations.data.find(config => config.metadata?.['app'] === 'waifumatch');
+      const features = { subscription_cancel: { enabled: true, mode: 'at_period_end' as const }, subscription_update: { enabled: false }, payment_method_update: { enabled: true }, invoice_history: { enabled: true } };
+      const configuration = existing ? await stripe.billingPortal.configurations.update(existing.id, { features }) : await stripe.billingPortal.configurations.create({ features, metadata: { app: 'waifumatch' } });
+      const portal = await stripe.billingPortal.sessions.create({ configuration: configuration.id, customer: rows.data.provider_customer_id, return_url: `${new URL(getRequest().url).origin}/premium` });
       return { url: portal.url };
     } catch (error) { return { error: getStripeErrorMessage(error) }; }
   });
+export const refreshBilling = createServerFn({ method: 'POST' }).middleware([requireSupabaseAuth])
+ .inputValidator(input => inputSchema.parse(input)).handler(async ({ data, context }) => {
+  try {
+   const rows = await context.supabase.from('payment_subscriptions').select('provider_subscription_id').eq('user_id', context.userId).eq('environment', data.environment);
+   if (rows.error) throw new Error('Your subscription could not be checked.');
+   for (const row of rows.data ?? []) await reconcileSubscription(row.provider_subscription_id, data.environment, context.userId);
+   return { ok: true };
+  } catch (error) { return { error: getStripeErrorMessage(error) }; }
+ });
+export const setRenewal = createServerFn({ method: 'POST' }).middleware([requireSupabaseAuth])
+ .inputValidator(input => inputSchema.extend({ cancel: z.boolean() }).parse(input)).handler(async ({ data, context }) => {
+  try {
+   const rows = await context.supabase.from('payment_subscriptions').select('*').eq('user_id', context.userId).eq('environment', data.environment).order('updated_at', { ascending: false });
+   if (rows.error) throw new Error('Your subscription could not be loaded.');
+   const row = rows.data?.find(item => paidAccess(item.status, item.current_period_end) && item.status !== 'canceled');
+   if (!row) throw new Error('No renewable subscription found.');
+   const stripe = createStripeClient(data.environment);
+   const subscription = await stripe.subscriptions.retrieve(row.provider_subscription_id);
+   if (subscription.metadata['userId'] !== context.userId) throw new Error('Subscription ownership could not be verified.');
+   await stripe.subscriptions.update(subscription.id, { cancel_at_period_end: data.cancel });
+   await reconcileSubscription(subscription.id, data.environment, context.userId);
+   return { ok: true };
+  } catch (error) { return { error: getStripeErrorMessage(error) }; }
+ });
