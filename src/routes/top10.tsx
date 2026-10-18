@@ -9,7 +9,7 @@ import { useServerFn } from '@tanstack/react-start';
 import { getAccount, savePreferences } from '@/lib/account.functions';
 import { preferencesSchema } from '@/lib/account-rules';
 
-export const Route = createFileRoute("/top10")({
+export const Route = createFileRoute("/top10")({ staticData: { sitemap: true },
   head: () => ({
     meta: [
       { title: "Top 10 — KamiMatch" },

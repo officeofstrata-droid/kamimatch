@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as CommunitiesRouteImport } from './routes/communities'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as Top10RouteImport } from './routes/top10'
 import { Route as AuthenticatedLikesRouteImport } from './routes/_authenticated/likes'
 import { Route as AuthenticatedPremiumRouteImport } from './routes/_authenticated/premium'
@@ -44,6 +45,11 @@ const AuthRoute = AuthRouteImport.update({
 const CommunitiesRoute = CommunitiesRouteImport.update({
   id: '/communities',
   path: '/communities',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
   getParentRoute: () => rootRouteImport,
 } as any)
 const Top10Route = Top10RouteImport.update({
@@ -118,6 +124,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/communities': typeof CommunitiesRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/top10': typeof Top10Route
   '/likes': typeof AuthenticatedLikesRoute
   '/premium': typeof AuthenticatedPremiumRoute
@@ -136,6 +143,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/communities': typeof CommunitiesRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/top10': typeof Top10Route
   '/likes': typeof AuthenticatedLikesRoute
   '/premium': typeof AuthenticatedPremiumRoute
@@ -156,6 +164,7 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/communities': typeof CommunitiesRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/top10': typeof Top10Route
   '/_authenticated/likes': typeof AuthenticatedLikesRoute
   '/_authenticated/premium': typeof AuthenticatedPremiumRoute
@@ -176,6 +185,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/communities'
+    | '/sitemap.xml'
     | '/top10'
     | '/likes'
     | '/premium'
@@ -194,6 +204,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/communities'
+    | '/sitemap.xml'
     | '/top10'
     | '/likes'
     | '/premium'
@@ -213,6 +224,7 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/auth'
     | '/communities'
+    | '/sitemap.xml'
     | '/top10'
     | '/_authenticated/likes'
     | '/_authenticated/premium'
@@ -233,6 +245,7 @@ export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
   CommunitiesRoute: typeof CommunitiesRoute
+  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   Top10Route: typeof Top10Route
   ApiPublicCatalogSearchRoute: typeof ApiPublicCatalogSearchRoute
   ApiPublicDiditWebhookRoute: typeof ApiPublicDiditWebhookRoute
@@ -267,6 +280,13 @@ declare module '@tanstack/react-router' {
       path: '/communities'
       fullPath: '/communities'
       preLoaderRoute: typeof CommunitiesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/top10': {
@@ -395,6 +415,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
   CommunitiesRoute: CommunitiesRoute,
+  SitemapDotxmlRoute: SitemapDotxmlRoute,
   Top10Route: Top10Route,
   ApiPublicCatalogSearchRoute: ApiPublicCatalogSearchRoute,
   ApiPublicDiditWebhookRoute: ApiPublicDiditWebhookRoute,

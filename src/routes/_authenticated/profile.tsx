@@ -15,7 +15,7 @@ import ren from '@/assets/char-ren.jpg';
 import kai from '@/assets/char-kai.jpg';
 
 export const accountOptions = () => queryOptions({ queryKey: ['account'], queryFn: () => getAccount() });
-export const Route = createFileRoute('/_authenticated/profile')({
+export const Route = createFileRoute('/_authenticated/profile')({ staticData: { sitemap: false },
   loader: ({ context }) => context.queryClient.ensureQueryData(accountOptions()),
   head: () => ({ meta: [{ title: 'Your profile — KamiMatch' }, { name: 'description', content: 'Set up your adult profile, anime taste and private identity check.' }, { property: 'og:title', content: 'Your profile — KamiMatch' }, { property: 'og:description', content: 'Your personal KamiMatch profile and safety status.' }, { property: 'og:type', content: 'website' }, { name: 'twitter:card', content: 'summary_large_image' }] }),
   component: ProfilePage,

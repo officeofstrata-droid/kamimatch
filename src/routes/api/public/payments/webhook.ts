@@ -1,7 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { verifyWebhook } from '@/lib/stripe.server';
 import { reconcileSubscription } from '@/lib/payments.server';
-export const Route = createFileRoute('/api/public/payments/webhook')({
+export const Route = createFileRoute('/api/public/payments/webhook')({ staticData: { sitemap: false },
   server: { handlers: { POST: async ({ request }) => {
     const environment = new URL(request.url).searchParams.get('env');
     if (environment !== 'sandbox' && environment !== 'live') return new Response('Invalid environment', { status: 400 });

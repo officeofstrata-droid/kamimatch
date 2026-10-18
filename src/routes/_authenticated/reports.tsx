@@ -8,7 +8,7 @@ import { AccountShell } from '@/components/AccountShell';
 import { Button } from '@/components/ui/button';
 
 const options = () => queryOptions({ queryKey: ['report-review'], queryFn: () => getReports(), staleTime: 0 });
-export const Route = createFileRoute('/_authenticated/reports')({
+export const Route = createFileRoute('/_authenticated/reports')({ staticData: { sitemap: false },
   loader: ({ context }) => context.queryClient.ensureQueryData(options()),
   head: () => ({ meta: [{ title: 'Safety reports — KamiMatch' }, { name: 'description', content: 'Restricted review of member safety reports.' }, { property: 'og:title', content: 'Safety reports — KamiMatch' }, { property: 'og:description', content: 'Authorised member safety review.' }, { property: 'og:type', content: 'website' }, { name: 'twitter:card', content: 'summary_large_image' }, { name: 'robots', content: 'noindex' }] }),
   component: Reports,
