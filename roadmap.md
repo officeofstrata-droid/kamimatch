@@ -2,7 +2,7 @@
 
 ## Phone installation and publishing
 - [x] Add home-screen installation manifest, local icons and phone head settings; no offline cache or native store distribution
-- [ ] Request publishing after current security and phone checks
+- [x] Phone screen, manifest and icons checked; build OK and basic security checks passed; publishing requested
 
 ## Current completion pass
 - [x] Finish implementable app preparation; owner-only activation and eligible-user checks remain below
