@@ -20,3 +20,5 @@
 - Persist daily discovery selections in owner-readable database rows through a locked RPC, rechecking verification and blocks on every read so refreshes cannot reroll or expose an unsafe pick.
 - Keep room input validation and local-time conversion in community-rules so optional scheduling behaves consistently at both input boundaries.
 - Safety report review lives in an authenticated reviewer-only route and checks the trusted role again on mutation, independently of RLS.
+- Keep Stripe access behind the shared gateway utility; authenticated payment functions bind customer and subscription metadata to the caller, and signed webhooks reconcile provider state through a service-only locked RPC.
+- Store test and live subscriptions separately by environment; only live paid-through memberships project into the database entitlement used by feature and storage policies, so test purchases cannot grant production access.

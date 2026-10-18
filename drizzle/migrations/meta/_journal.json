@@ -50,6 +50,13 @@
       "when": 1792280978232,
       "tag": "0006_daily_soulmate_selection",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1792281568036,
+      "tag": "0007_payment_subscription_state",
+      "breakpoints": true
     }
   ]
 }
