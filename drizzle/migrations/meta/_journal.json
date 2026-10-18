@@ -71,6 +71,13 @@
       "when": 1792283634480,
       "tag": "0009_restrict_community_room_reads_to_verified_users",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1792285347130,
+      "tag": "0010_add_photo_reveals",
+      "breakpoints": true
     }
   ]
 }
