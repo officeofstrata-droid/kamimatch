@@ -78,6 +78,13 @@
       "when": 1792285347130,
       "tag": "0010_add_photo_reveals",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1792286380478,
+      "tag": "0011_didit_only_identity_verification",
+      "breakpoints": true
     }
   ]
 }

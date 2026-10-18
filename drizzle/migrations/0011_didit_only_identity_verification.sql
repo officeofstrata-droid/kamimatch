@@ -1,0 +1,12 @@
+CREATE OR REPLACE FUNCTION public.is_verified(_user_id uuid) RETURNS boolean LANGUAGE sql STABLE SECURITY DEFINER SET search_path=public AS $$ SELECT EXISTS(SELECT 1 FROM public.account_details d WHERE d.user_id=_user_id AND d.birth_date <= (CURRENT_DATE-INTERVAL '18 years')::date AND COALESCE((SELECT v.status='approved' AND v.verified_birth_date=d.birth_date FROM public.verification_sessions v WHERE v.user_id=_user_id AND v.provider='didit' ORDER BY v.created_at DESC,v.id DESC LIMIT 1),false)) $$;
+REVOKE ALL ON FUNCTION public.is_verified(uuid) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION public.is_verified(uuid) TO authenticated, service_role;
+REVOKE INSERT, UPDATE ON public.identity_submissions FROM authenticated;
+REVOKE UPDATE(status,reviewer_note,reviewed_at,reviewed_by) ON public.identity_submissions FROM authenticated;
+ALTER POLICY identity_insert ON public.identity_submissions WITH CHECK (false);
+ALTER POLICY identity_review ON public.identity_submissions USING (false) WITH CHECK (false);
+ALTER POLICY identity_read ON public.identity_submissions USING (user_id=auth.uid());
+ALTER POLICY identity_upload ON storage.objects WITH CHECK (false);
+ALTER POLICY identity_file_read ON storage.objects USING (bucket_id='identity-checks' AND (storage.foldername(name))[1]=auth.uid()::text);
+COMMENT ON TABLE public.identity_submissions IS 'DEPRECATED: legacy private submissions retained for owners; cannot approve identity. Didit verification_sessions are the only eligibility source.';
+COMMENT ON COLUMN public.profiles.avatar IS 'DEPRECATED: preset character selector retired; discoverable portraits come from AI-converted profile_media.';
