@@ -1,5 +1,9 @@
 # WaifuMatch completion roadmap
 
+## Phone installation and publishing
+- [x] Add home-screen installation manifest, local icons and phone head settings; no offline cache or native store distribution
+- [x] Phone screen, manifest and icons checked; build OK and basic security checks passed; publishing requested
+
 ## Current completion pass
 - [x] Finish implementable app preparation; owner-only activation and eligible-user checks remain below
 - [x] Enable Stripe test payments, create Premium subscription and wire checkout; fake-card purchase confirmed through the UI
@@ -7,14 +11,14 @@
 - [x] Finish moderation report queue and stable daily soulmate selection; authorized successful flows require eligible accounts
 - [x] Audit and repair account, discovery, community and media safeguards; blocked discovery, private rosters, UTC quotas and failed-conversion allowance repaired
 - [x] Run 27 rule/routing tests and signed-in/public browser checks; five phone pages fit with no alerts or page errors; unsigned payment webhook rejected
-- [ ] Activate live Stripe — blocked: owner must claim the test account, complete Stripe verification and install the Lovable app before publishing and a real-payment check
+- [x] Stripe live setup and provider readiness passed; an actual live purchase remains unverified
 - [ ] Verify automated identity, paired dating, rooms, media and authorized moderation end to end — blocked: Didit credentials, approved participants and a named trusted reviewer; no approval bypasses
 
 ## New sign-in and verification request
 - [x] Replace Veriff with Didit sessions, signed decision handling and adult ID/selfie checks; free allowance confirmed
 - [x] Apple sign-in enabled; sign-in button respects adult consent
 - [x] Discord support checked — unavailable as a managed sign-in provider; no fake button
-- [ ] Activate and test Didit — blocked: owner API key, workflow ID, webhook destination secret and public deployment required
+- [ ] Activate and test Didit — API key and workflow ID saved; blocked on webhook signing secret, published destination and an actual identity check
 
 ## Stage 1 — Real accounts and safety
 - [x] Google and Lovable sign-in configured, session-aware navigation and sign-out implemented
