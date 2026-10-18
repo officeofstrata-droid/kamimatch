@@ -86,7 +86,21 @@ export const createPortalSession = createServerFn({ method: 'POST' }).middleware
     try {
       const rows = await context.supabase.from('payment_subscriptions').select('provider_customer_id').eq('user_id', context.userId).eq('environment', data.environment).order('updated_at', { ascending: false }).limit(1).maybeSingle();
       if (rows.error || !rows.data) throw new Error('No subscription found.');
-      const portal = await createStripeClient(data.environment).billingPortal.sessions.create({ customer: rows.data.provider_customer_id, return_url: `${new URL(getRequest().url).origin}/premium` });
+      const stripe = createStripeClient(data.environment);
+      const configurations = await stripe.billingPortal.configurations.list({ limit: 100 });
+      const existing = configurations.data.find(config => config.metadata?.['app'] === 'waifumatch');
+      const features = { subscription_cancel: { enabled: true, mode: 'at_period_end' as const }, subscription_update: { enabled: false }, payment_method_update: { enabled: true }, invoice_history: { enabled: true } };
+      const configuration = existing ? await stripe.billingPortal.configurations.update(existing.id, { features }) : await stripe.billingPortal.configurations.create({ features, metadata: { app: 'waifumatch' } });
+      const portal = await stripe.billingPortal.sessions.create({ configuration: configuration.id, customer: rows.data.provider_customer_id, return_url: `${new URL(getRequest().url).origin}/premium` });
       return { url: portal.url };
     } catch (error) { return { error: getStripeErrorMessage(error) }; }
   });
+export const refreshBilling = createServerFn({ method: 'POST' }).middleware([requireSupabaseAuth])
+ .inputValidator(input => inputSchema.parse(input)).handler(async ({ data, context }) => {
+  try {
+   const rows = await context.supabase.from('payment_subscriptions').select('provider_subscription_id').eq('user_id', context.userId).eq('environment', data.environment);
+   if (rows.error) throw new Error('Your subscription could not be checked.');
+   for (const row of rows.data ?? []) await reconcileSubscription(row.provider_subscription_id, data.environment, context.userId);
+   return { ok: true };
+  } catch (error) { return { error: getStripeErrorMessage(error) }; }
+ });
