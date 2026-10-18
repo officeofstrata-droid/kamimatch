@@ -1,5 +1,10 @@
 # KamiMatch completion roadmap
 
+## Didit-only and own-photo release
+- [x] Remove manual identity review and use only signed Didit approval for eligibility; legacy writes disabled and private records retained for owners
+- [x] Replace preset portrait selection with members' own photo-to-anime uploads; signed-in gallery and Didit-only screens checked, 30 tests passed
+- [ ] Check changed flows and publish; no additional real payment test requested
+
 ## Live-use pass (18 Oct 2026)
 - [x] Removed sample swipe deck from the logged-out home page; replaced with a real landing page (how it works, features, safety)
 - [x] Removed sample character fallback images from discovery; members without a portrait see a neutral placeholder
@@ -19,7 +24,7 @@
 - [x] Audit and repair account, discovery, community and media safeguards; blocked discovery, private rosters, UTC quotas and failed-conversion allowance repaired
 - [x] Run 27 rule/routing tests and signed-in/public browser checks; five phone pages fit with no alerts or page errors; unsigned payment webhook rejected
 - [x] Stripe live setup and provider readiness passed; an actual live purchase remains unverified
-- [ ] Verify automated identity, paired dating, rooms, media and authorized moderation end to end — blocked: Didit credentials, approved participants and a named trusted reviewer; no approval bypasses
+- [ ] Verify automated identity and paired dating/rooms end to end — blocked: real Didit-approved participants; no approval bypasses
 
 ## New sign-in and verification request
 - [x] Replace Veriff with Didit sessions, signed decision handling and adult ID/selfie checks; free allowance confirmed
@@ -31,16 +36,16 @@
 ## Stage 1 — Real accounts and safety
 - [x] Google and Lovable sign-in configured, session-aware navigation and sign-out implemented
 - [x] Adult profile onboarding and account-saved Anime DNA implemented
-- [x] Private government ID upload and live camera selfie submission implemented
-- [x] Restricted reviewer queue and meeting eligibility helper implemented (dating endpoints must enforce it in Stage 2)
+- [x] Government ID and live selfie collection moved exclusively to Didit
+- [x] Retired manual identity queue; eligibility enforced through Didit-only database helper
 - [x] Signed-in profile/gallery, pending identity gate, persisted bingo and empty inbox checked with requesting user's account
-- [ ] Successful verified matching, messages, room creation and media conversion — blocked: approved participants/provider setup and premium account required; never bypass review for testing
-- [ ] Enable trusted reviewer — blocked: owner must identify a reviewer account; no automatic admin assignment
+- [ ] Successful verified matching, messages and room creation — blocked: two real Didit-approved participants; never bypass verification for testing
+- [x] Trusted identity reviewer requirement retired by owner; Didit-only verification requested
 
 ## New media and plans
 - [x] Anime-style conversion functions, consent-based uploads, private originals and gallery management implemented; actual conversion remains unverified
 - [x] Premium-only video uploads with server-side access checks implemented; paid video flow remains unverified
-- [x] Generous free plan and premium extras; test checkout is open, live payments remain owner-dependent
+- [x] Generous free plan and premium extras; live payments configured, owner explicitly waived another real £7.99 test
 
 ## Stage 2 — Dating
 - [x] Real approved-profile discovery, compatibility breakdown and blind-date display implemented
@@ -56,9 +61,8 @@
 - [x] Sakura swipe UI, anime catalogue search, communities preview and Top 10 picker
 
 ## Safety and release blockers
-- Didit setup screen verified signed-in on desktop and phone; existing pending ID untouched; unconfigured webhook returns 503; 27 rule/routing tests passed and latest build OK.
+- Didit-only screen and own-photo gallery checked signed-in; old review bookmarks redirect to verification; 30 tests passed, no page errors or mobile overflow.
 - Stripe test purchase and cancellation read back through the UI; test and live records are isolated, and test subscriptions never grant live feature/storage entitlements. External billing portal opened but rendered blank in the sandbox browser; in-app cancellation and renewal restoration were verified instead.
-- Hosted Didit session, real signed provider approval, media conversion and provider login completion remain unverified until credentials and suitable accounts exist.
-- No account becomes a reviewer automatically; the owner must name the trusted reviewer account.
-- Manual verification is not automated identity/liveness certification; a verification service is needed for automated checks.
+- Real Didit approval remains unverified until the owner finishes a real identity check. Actual photo remix remains unverified without an owner-provided photo and consent; no generated sample was added to their account.
+- Safety-report moderation remains separate and requires an explicitly authorized moderator; removing identity reviewers does not remove human safety-report handling.
 - Sample profiles and community counts are not real people or live rooms.

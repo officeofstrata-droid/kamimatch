@@ -11,7 +11,7 @@ export const getDiditStatus=createServerFn({method:'GET'}).middleware([requireSu
 });
 export const startDidit=createServerFn({method:'POST'}).middleware([requireSupabaseAuth]).inputValidator(input=>z.object({consent:z.literal(true)}).parse(input)).handler(async({context})=>{
  const apiKey=process.env['DIDIT_API_KEY'],secret=process.env['DIDIT_WEBHOOK_SECRET'],workflow=process.env['DIDIT_WORKFLOW_ID'];
- if(!apiKey||!secret||!workflow)throw new Error('Didit is not connected yet. Your current private review remains available.');
+ if(!apiKey||!secret||!workflow)throw new Error('Identity checks are temporarily unavailable. Please try again later.');
  if(!z.string().uuid().safeParse(workflow).success)throw new Error('Didit needs a valid verification workflow.');
  const details=await context.supabase.from('account_details').select('birth_date').eq('user_id',context.userId).single();if(details.error||!details.data)throw new Error('Complete your adult profile first.');
  const pending=await context.supabase.from('verification_sessions').select('status,hosted_url').eq('user_id',context.userId).eq('provider','didit').in('status',['created','pending']).limit(1).maybeSingle();
