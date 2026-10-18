@@ -50,6 +50,25 @@ export const addVideo=createServerFn({method:'POST'}).middleware([requireSupabas
  const result=await supabaseAdmin.from('profile_media').insert({user_id:context.userId,kind:'video',path:data.path});
  if(result.error) throw new Error('The video could not be added.'); return {ok:true};
 });
+export const getReveals=createServerFn({method:'GET'}).middleware([requireSupabaseAuth]).inputValidator(input=>z.object({matchId:z.string().uuid()}).parse(input)).handler(async({data,context})=>{
+ const {supabase,userId}=context;
+ const match=await supabase.from('matches').select('id').eq('id',data.matchId).maybeSingle();
+ if(match.error || !match.data) throw new Error('This match is not available.');
+ const now=new Date();
+ const [premium,rows,used]=await Promise.all([supabase.rpc('is_premium',{_user_id:userId}),supabase.from('photo_reveals').select('*').eq('match_id',data.matchId).order('created_at'),supabase.from('photo_reveals').select('id').eq('owner_id',userId).gte('created_at',new Date(Date.UTC(now.getUTCFullYear(),now.getUTCMonth(),1)).toISOString())]);
+ if(premium.error || rows.error || used.error) throw new Error('Shared photos could not be loaded.');
+ const {supabaseAdmin}=await import('@/integrations/supabase/client.server');
+ const reveals=await Promise.all((rows.data??[]).map(async row=>({...row,url:(await supabaseAdmin.storage.from('profile-originals').createSignedUrl(row.path,300)).data?.signedUrl??null})));
+ return {premium:premium.data===true,used:used.data?.length??0,reveals};
+});
+export const revealRealPhoto=createServerFn({method:'POST'}).middleware([requireSupabaseAuth]).inputValidator(input=>z.object({matchId:z.string().uuid(),path:z.string().max(300)}).parse(input)).handler(async({data,context})=>{
+ if(!data.path.startsWith(`${context.userId}/`)) throw new Error('Upload your own photo first.');
+ const file=await context.supabase.storage.from('profile-originals').download(data.path);
+ if(file.error || !file.data || file.data.size>10*1024*1024 || !['image/jpeg','image/png','image/webp'].includes(file.data.type)) throw new Error('Use an uploaded JPG, PNG or WebP under 10 MB.');
+ const reserved=await context.supabase.rpc('reserve_reveal',{_match_id:data.matchId,_path:data.path});
+ if(reserved.error || !reserved.data) throw new Error(reserved.error?.message??'The photo could not be shared.');
+ return {ok:true};
+});
 export const deleteMedia=createServerFn({method:'POST'}).middleware([requireSupabaseAuth]).inputValidator(input=>z.object({id:z.string().uuid()}).parse(input)).handler(async({data,context})=>{
  const row=await context.supabase.from('profile_media').select('path').eq('id',data.id).eq('user_id',context.userId).single();
  if(row.error || !row.data) throw new Error('Media not found.');
