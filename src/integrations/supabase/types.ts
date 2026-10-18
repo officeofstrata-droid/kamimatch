@@ -766,6 +766,7 @@ export type Database = {
         Returns: string
       }
       rewind_swipe: { Args: never; Returns: boolean }
+      room_member_count: { Args: { _room: string }; Returns: number }
       sync_payment_subscription: {
         Args: {
           _cancel: boolean

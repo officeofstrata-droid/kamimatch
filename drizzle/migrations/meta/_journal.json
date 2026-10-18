@@ -57,6 +57,13 @@
       "when": 1792281568036,
       "tag": "0007_payment_subscription_state",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1792281779790,
+      "tag": "0008_room_privacy_and_photo_retry_quota",
+      "breakpoints": true
     }
   ]
 }
