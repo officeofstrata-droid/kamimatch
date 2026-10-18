@@ -4,6 +4,7 @@ const today=new Date('2026-10-17T12:00:00Z');
 const id='11111111-2222-4333-8444-555555555555';
 const good={status:'Approved',environment:'live',session_id:id,workflow_id:id,vendor_data:id,id_verifications:[{status:'Approved',date_of_birth:'1999-01-01',verification_method:'document'}],liveness_checks:[{status:'Approved',method:'PASSIVE'}],face_matches:[{status:'Approved'}]};
 describe('Didit adult identity rules',()=>{
+ it('does not approve a legacy manual reviewer decision',()=>{expect(diditAdultApproved({status:'approved',reviewed_by:id,reviewed_at:'2026-10-18T01:00:00Z'},'1999-01-01',today)).toBe(false);});
  it('requires approved government ID, live selfie and face match',()=>{expect(diditAdultApproved(good,'1999-01-01',today)).toBe(true);expect(diditAdultApproved({...good,liveness_checks:[]},'1999-01-01',today)).toBe(false);expect(diditAdultApproved({...good,face_matches:[{status:'Declined'}]},'1999-01-01',today)).toBe(false);});
  it('requires extracted document DOB to match account DOB',()=>{expect(diditAdultApproved(good,'1999-01-02',today)).toBe(false);});
  it('requires age 18 or older',()=>{const d={...good,id_verifications:[{status:'Approved',date_of_birth:'2008-10-18'}]};expect(diditAdultApproved(d,'2008-10-18',today)).toBe(false);expect(diditAdultApproved({...d,id_verifications:[{status:'Approved',date_of_birth:'2008-10-17'}]},'2008-10-17',today)).toBe(true);});

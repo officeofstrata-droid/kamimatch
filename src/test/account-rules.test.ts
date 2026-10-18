@@ -18,3 +18,9 @@ describe('Top 10 limits', () => {
     });
   }
 });
+
+describe('Own-photo profiles', () => {
+  const profile = { display_name: 'Sam', birth_date: '1999-01-01', bio: '', city: '', archetype: 'Warm and caring', watching: '', consent: true };
+  it('saves an adult profile without a preset portrait', () => { expect(profileSchema.safeParse(profile).success).toBe(true); });
+  it('does not accept a preset avatar as a profile mutation', () => { const parsed = profileSchema.parse({ ...profile, avatar: 'aiko' }); expect(Object.hasOwn(parsed, 'avatar')).toBe(false); });
+});
