@@ -12,7 +12,7 @@ import { supabase } from '@/integrations/supabase/client';
 const options = () => queryOptions({ queryKey: ['account'], queryFn: () => getAccount() });
 export const Route = createFileRoute('/_authenticated/verify')({
   loader: ({ context }) => context.queryClient.ensureQueryData(options()),
-  head: () => ({ meta: [{ title: 'Private identity check — WaifuMatch' }, { name: 'description', content: 'Submit your government ID and live camera selfie for private adult identity review.' }, { property: 'og:title', content: 'Private identity check — WaifuMatch' }, { property: 'og:description', content: 'Private ID and selfie review for adult dating safety.' }, { property: 'og:type', content: 'website' }, { name: 'twitter:card', content: 'summary_large_image' }] }),
+  head: () => ({ meta: [{ title: 'Private identity check — KamiMatch' }, { name: 'description', content: 'Submit your government ID and live camera selfie for private adult identity review.' }, { property: 'og:title', content: 'Private identity check — KamiMatch' }, { property: 'og:description', content: 'Private ID and selfie review for adult dating safety.' }, { property: 'og:type', content: 'website' }, { name: 'twitter:card', content: 'summary_large_image' }] }),
   component: VerifyPage,
 });
 

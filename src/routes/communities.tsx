@@ -23,14 +23,14 @@ import { Petals } from "@/components/Petals";
 export const Route = createFileRoute("/communities")({
   head: () => ({
     meta: [
-      { title: "Communities — WaifuMatch" },
+      { title: "Communities — KamiMatch" },
       {
         name: "description",
         content:
-          "Watch parties, trope clubs, seasonal buddies and convention companions — find your anime people on WaifuMatch.",
+          "Watch parties, trope clubs, seasonal buddies and convention companions — find your anime people on KamiMatch.",
       },
       { property: "og:type", content: "website" },
-      { property: "og:title", content: "Communities — WaifuMatch" },
+      { property: "og:title", content: "Communities — KamiMatch" },
       {
         property: "og:description",
         content:

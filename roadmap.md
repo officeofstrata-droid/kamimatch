@@ -1,4 +1,4 @@
-# WaifuMatch completion roadmap
+# KamiMatch completion roadmap
 
 ## Phone installation and publishing
 - [x] Add home-screen installation manifest, local icons and phone head settings; no offline cache or native store distribution

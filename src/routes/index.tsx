@@ -11,9 +11,9 @@ import { useSession } from '@/components/SessionProvider';
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "WaifuMatch — 18+ ID-verified anime dating" },
+      { title: "KamiMatch — 18+ ID-verified anime dating" },
       { name: "description", content: "Swipe for your anime soulmate. Match on archetypes, tropes and Anime DNA in an adults-only, ID-verified community." },
-      { property: "og:title", content: "WaifuMatch — Find your anime soulmate" },
+      { property: "og:title", content: "KamiMatch — Find your anime soulmate" },
       { property: "og:description", content: "Swipe on archetypes and anime taste. 18+ only, every profile ID verified." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -142,7 +142,7 @@ function Index() {
           <Button asChild variant="ghost" size="icon" className="rounded-full text-muted-foreground"><Link to={user ? '/profile' : '/auth'} aria-label={user ? 'My profile' : 'Sign in'}><User className="h-6 w-6" /></Link></Button>
           <div className="flex items-center gap-1.5">
             <Flame className="h-7 w-7 text-primary" fill="currentColor" />
-            <span className="text-brand font-display text-2xl">waifumatch</span>
+            <span className="text-brand font-display text-2xl">kamimatch</span>
           </div>
           <Button asChild variant="ghost" size="icon" className="rounded-full text-muted-foreground"><Link to="/messages" aria-label="Messages"><MessageCircle className="h-6 w-6" /></Link></Button>
         </header>
@@ -183,7 +183,7 @@ function Index() {
 
         <div className="mt-8 text-center">
           <Button asChild className="h-14 w-full rounded-full bg-brand font-extrabold shadow-card"><Link to={user ? '/profile' : '/auth'}>{user ? 'My character & safety check' : 'Create your character'}</Link></Button>
-          <p className="mt-3 text-xs text-muted-foreground">You must be 18 or older and verify your identity to use WaifuMatch.</p>
+          <p className="mt-3 text-xs text-muted-foreground">You must be 18 or older and verify your identity to use KamiMatch.</p>
         </div>
       </div>
 

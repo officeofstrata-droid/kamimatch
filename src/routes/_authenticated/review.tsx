@@ -10,7 +10,7 @@ import { Button } from '@/components/ui/button';
 const options = () => queryOptions({ queryKey: ['identity-review'], queryFn: () => getReviewQueue(), staleTime: 0 });
 export const Route = createFileRoute('/_authenticated/review')({
   loader: ({ context }) => context.queryClient.ensureQueryData(options()),
-  head: () => ({ meta: [{ title: 'Identity review — WaifuMatch' }, { name: 'description', content: 'Authorised private identity review for WaifuMatch members.' }, { property: 'og:title', content: 'Identity review — WaifuMatch' }, { property: 'og:description', content: 'Restricted adult identity review.' }, { property: 'og:type', content: 'website' }, { name: 'twitter:card', content: 'summary_large_image' }, { name: 'robots', content: 'noindex' }] }),
+  head: () => ({ meta: [{ title: 'Identity review — KamiMatch' }, { name: 'description', content: 'Authorised private identity review for KamiMatch members.' }, { property: 'og:title', content: 'Identity review — KamiMatch' }, { property: 'og:description', content: 'Restricted adult identity review.' }, { property: 'og:type', content: 'website' }, { name: 'twitter:card', content: 'summary_large_image' }, { name: 'robots', content: 'noindex' }] }),
   component: ReviewPage,
 });
 
