@@ -2,8 +2,8 @@
 
 ## Phone installation and publishing
 - [x] Add home-screen installation manifest, local icons and phone head settings; no offline cache or native store distribution
-- [ ] Set the web address before publishing — owner bought kamimatch.co.uk (99p, another registrar); blocked: registry does not show the registration yet; connect once it appears
-- [ ] Publish — phone screen, manifest and icons checked; build OK and basic security checks passed; publishing approval declined
+- [x] Set the web address before publishing — kamimatch.co.uk bought at one.com (99p), DNS A records and TXT verification confirmed at both root and www
+- [x] Publish requested with the Lovable address renamed to kamimatch — deployment scheduled; domain finishing its secure-certificate setup
 
 ## Current completion pass
 - [x] Finish implementable app preparation; owner-only activation and eligible-user checks remain below
