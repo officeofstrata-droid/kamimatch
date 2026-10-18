@@ -63,7 +63,7 @@ export const createCheckoutSession = createServerFn({ method: 'POST' }).middlewa
         automatic_tax: { enabled: true }, customer_update: { address: 'auto' },
         return_url: `${new URL(getRequest().url).origin}/premium?session_id={CHECKOUT_SESSION_ID}`,
         metadata: { userId: context.userId }, subscription_data: { metadata: { userId: context.userId } },
-      }, { idempotencyKey: `premium-${data.environment}-${context.userId}-${Math.floor(Date.now() / 600000)}` });
+      }, { idempotencyKey: `premium-address-${data.environment}-${context.userId}-${Math.floor(Date.now() / 600000)}` });
       if (!session.client_secret) throw new Error('Stripe did not return a checkout form.');
       return { clientSecret: session.client_secret };
     } catch (error) { return { error: getStripeErrorMessage(error) }; }
