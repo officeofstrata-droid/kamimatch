@@ -1,13 +1,14 @@
 # WaifuMatch completion roadmap
 
 ## Current completion pass
-- [ ] Finish remaining app preparation after checkout and report owner-only activation steps
-- [ ] Enable Stripe test payments, create Premium subscription and wire checkout; live payments require owner account claim
-- [ ] Confirm purchase/upgrade rules and implement paid activation plus paid-through cancellation
-- [ ] Finish moderation report queue and daily soulmate selection
-- [ ] Audit and repair account, discovery, community and media flows
-- [ ] Run rule tests and signed-in/public browser checks
-- [ ] Report remaining launch blockers; defer Didit account connection until app preparation is complete
+- [x] Finish implementable app preparation; owner-only activation and eligible-user checks remain below
+- [x] Enable Stripe test payments, create Premium subscription and wire checkout; fake-card purchase confirmed through the UI
+- [x] Confirm purchase rules; implement live paid activation, cancellation at period end and renewal restoration; test cancellation persisted after reload
+- [x] Finish moderation report queue and stable daily soulmate selection; authorized successful flows require eligible accounts
+- [x] Audit and repair account, discovery, community and media safeguards; blocked discovery, private rosters, UTC quotas and failed-conversion allowance repaired
+- [x] Run 27 rule/routing tests and signed-in/public browser checks; five phone pages fit with no alerts or page errors; unsigned payment webhook rejected
+- [ ] Activate live Stripe — blocked: owner must claim the test account, complete Stripe verification and install the Lovable app before publishing and a real-payment check
+- [ ] Verify automated identity, paired dating, rooms, media and authorized moderation end to end — blocked: Didit credentials, approved participants and a named trusted reviewer; no approval bypasses
 
 ## New sign-in and verification request
 - [x] Replace Veriff with Didit sessions, signed decision handling and adult ID/selfie checks; free allowance confirmed
@@ -27,23 +28,24 @@
 ## New media and plans
 - [x] Anime-style conversion functions, consent-based uploads, private originals and gallery management implemented; actual conversion remains unverified
 - [x] Premium-only video uploads with server-side access checks implemented; paid video flow remains unverified
-- [x] Generous free plan and premium extras, honest purchase-unavailable state
+- [x] Generous free plan and premium extras; test checkout is open, live payments remain owner-dependent
 
 ## Stage 2 — Dating
 - [x] Real approved-profile discovery, compatibility breakdown and blind-date display implemented
 - [x] Mutual-match, realtime message, icebreaker and voice-note flows implemented; successful pair flow awaiting approved participants
 - [x] Blocking/reporting server functions implemented
-- [ ] Moderation report queue surface and daily soulmate pull — remain to finish
+- [x] Moderation report queue surface and daily soulmate pull implemented; authorized success checks await eligible accounts
 
 ## Stage 3 — Communities and premium
 - [x] Persistent clubs, watch-party rooms, seasonal and convention buddies implemented; joining/hosting awaits approved users
-- [ ] Premium checkout and subscription management (requires payment setup)
+- [x] Premium embedded checkout, customer binding, signed subscription updates, cancellation and renewal management; test purchase and cancellation verified
 
 ## Existing
 - [x] Sakura swipe UI, anime catalogue search, communities preview and Top 10 picker
 
 ## Safety and release blockers
-- Didit setup screen verified signed-in on desktop and phone; existing pending ID untouched; unconfigured webhook returns 503; 17 rule tests passed and latest build OK.
+- Didit setup screen verified signed-in on desktop and phone; existing pending ID untouched; unconfigured webhook returns 503; 27 rule/routing tests passed and latest build OK.
+- Stripe test purchase and cancellation read back through the UI; test and live records are isolated, and test subscriptions never grant live feature/storage entitlements. External billing portal opened but rendered blank in the sandbox browser; in-app cancellation and renewal restoration were verified instead.
 - Hosted Didit session, real signed provider approval, media conversion and provider login completion remain unverified until credentials and suitable accounts exist.
 - No account becomes a reviewer automatically; the owner must name the trusted reviewer account.
 - Manual verification is not automated identity/liveness certification; a verification service is needed for automated checks.
