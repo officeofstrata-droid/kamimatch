@@ -12,14 +12,14 @@ import { preferencesSchema } from '@/lib/account-rules';
 export const Route = createFileRoute("/top10")({
   head: () => ({
     meta: [
-      { title: "Top 10 — WaifuMatch" },
+      { title: "Top 10 — KamiMatch" },
       {
         name: "description",
         content:
           "Build your top 10 anime, characters and signature moves, then set your filler tolerance, dub-or-sub and mood — your Anime DNA.",
       },
       { property: "og:type", content: "website" },
-      { property: "og:title", content: "Top 10 — WaifuMatch" },
+      { property: "og:title", content: "Top 10 — KamiMatch" },
       {
         property: "og:description",
         content:

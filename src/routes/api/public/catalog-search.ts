@@ -29,7 +29,7 @@ export const Route = createFileRoute("/api/public/catalog-search")({
             headers: {
               "Content-Type": "application/json",
               Accept: "application/json",
-              "User-Agent": "WaifuMatch/1.0 (anime profile picker)",
+              "User-Agent": "KamiMatch/1.0 (anime profile picker)",
             },
             body: JSON.stringify({ query: QUERY[kind], variables: { s: q } }),
             signal: AbortSignal.timeout(9000),
