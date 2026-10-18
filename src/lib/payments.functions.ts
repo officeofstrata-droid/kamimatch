@@ -60,7 +60,7 @@ export const createCheckoutSession = createServerFn({ method: 'POST' }).middlewa
       const session = await stripe.checkout.sessions.create({
         ui_mode: 'embedded_page', mode: 'subscription', customer,
         line_items: [{ price: price.id, quantity: 1 }],
-        automatic_tax: { enabled: true },
+        automatic_tax: { enabled: true }, customer_update: { address: 'auto' },
         return_url: `${new URL(getRequest().url).origin}/premium?session_id={CHECKOUT_SESSION_ID}`,
         metadata: { userId: context.userId }, subscription_data: { metadata: { userId: context.userId } },
       }, { idempotencyKey: `premium-${data.environment}-${context.userId}-${Math.floor(Date.now() / 600000)}` });
