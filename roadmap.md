@@ -1,5 +1,10 @@
 # KamiMatch completion roadmap
 
+## Didit-only and own-photo release
+- [ ] Remove manual identity review and use only signed Didit approval for eligibility
+- [ ] Replace preset portrait selection with members' own photo-to-anime uploads
+- [ ] Check changed flows and publish; no additional real payment test requested
+
 ## Live-use pass (18 Oct 2026)
 - [x] Removed sample swipe deck from the logged-out home page; replaced with a real landing page (how it works, features, safety)
 - [x] Removed sample character fallback images from discovery; members without a portrait see a neutral placeholder
@@ -35,7 +40,7 @@
 - [x] Restricted reviewer queue and meeting eligibility helper implemented (dating endpoints must enforce it in Stage 2)
 - [x] Signed-in profile/gallery, pending identity gate, persisted bingo and empty inbox checked with requesting user's account
 - [ ] Successful verified matching, messages, room creation and media conversion — blocked: approved participants/provider setup and premium account required; never bypass review for testing
-- [ ] Enable trusted reviewer — blocked: owner must identify a reviewer account; no automatic admin assignment
+- [x] Trusted identity reviewer requirement retired by owner; Didit-only verification requested
 
 ## New media and plans
 - [x] Anime-style conversion functions, consent-based uploads, private originals and gallery management implemented; actual conversion remains unverified
