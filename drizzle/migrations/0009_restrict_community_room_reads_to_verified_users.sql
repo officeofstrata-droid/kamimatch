@@ -1,0 +1,1 @@
+ALTER POLICY rooms_read ON public.community_rooms TO authenticated USING (owner_id = (SELECT auth.uid()) OR public.is_verified((SELECT auth.uid())));
