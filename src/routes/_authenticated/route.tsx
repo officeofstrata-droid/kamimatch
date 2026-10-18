@@ -2,7 +2,7 @@ import { createFileRoute, Outlet, redirect } from '@tanstack/react-router';
 import { supabase } from '@/integrations/supabase/client';
 
 // Integration-compatible client gate; every protected server function separately validates the bearer.
-export const Route = createFileRoute('/_authenticated')({
+export const Route = createFileRoute('/_authenticated')({ staticData: { sitemap: "exclude-subtree" },
   ssr: false,
   beforeLoad: async () => {
     const { data, error } = await supabase.auth.getUser();

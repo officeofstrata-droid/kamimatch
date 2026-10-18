@@ -8,7 +8,7 @@ import kai from "@/assets/char-kai.jpg";
 import { Button } from '@/components/ui/button';
 import { useSession } from '@/components/SessionProvider';
 
-export const Route = createFileRoute("/")({
+export const Route = createFileRoute("/")({ staticData: { sitemap: true },
   head: () => ({
     meta: [
       { title: "KamiMatch — 18+ ID-verified anime dating" },

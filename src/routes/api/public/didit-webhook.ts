@@ -2,7 +2,7 @@ import { createFileRoute } from '@tanstack/react-router';
 import { z } from 'zod';
 import { authenticDiditWebhook,diditAdultApproved,diditDecisionSchema } from '@/lib/didit-rules';
 const event=z.object({event_id:z.string().uuid(),webhook_type:z.enum(['status.updated','data.updated']),timestamp:z.number().int(),created_at:z.number().int().positive(),environment:z.enum(['live','sandbox']),session_id:z.string().uuid(),workflow_id:z.string().uuid(),vendor_data:z.string().uuid(),status:z.string(),session_kind:z.string().optional(),decision:z.unknown().optional()});
-export const Route=createFileRoute('/api/public/didit-webhook')({server:{handlers:{POST:async({request})=>{
+export const Route=createFileRoute('/api/public/didit-webhook')({ staticData: { sitemap: false },server:{handlers:{POST:async({request})=>{
  const secret=process.env['DIDIT_WEBHOOK_SECRET'],workflow=process.env['DIDIT_WORKFLOW_ID'];
  if(!secret||!workflow)return new Response('Verification service not configured',{status:503});
  if(Number(request.headers.get('content-length')??0)>200000)return new Response('Payload too large',{status:413});

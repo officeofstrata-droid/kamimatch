@@ -20,7 +20,7 @@ import {
 } from "lucide-react";
 import { Petals } from "@/components/Petals";
 
-export const Route = createFileRoute("/communities")({
+export const Route = createFileRoute("/communities")({ staticData: { sitemap: true },
   head: () => ({
     meta: [
       { title: "Communities — KamiMatch" },

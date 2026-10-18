@@ -7,7 +7,7 @@ import { AccountShell } from '@/components/AccountShell';
 import { Button } from '@/components/ui/button';
 import aiko from '@/assets/char-aiko.jpg';
 
-export const Route = createFileRoute('/auth')({
+export const Route = createFileRoute('/auth')({ staticData: { sitemap: false },
   head: () => ({ meta: [{ title: 'Sign in — KamiMatch' }, { name: 'description', content: 'Create your adult anime dating profile with secure sign-in.' }, { property: 'og:title', content: 'Sign in — KamiMatch' }, { property: 'og:description', content: 'Join KamiMatch and create your anime dating profile.' }, { property: 'og:type', content: 'website' }, { name: 'twitter:card', content: 'summary_large_image' }] }),
   component: AuthPage,
 });

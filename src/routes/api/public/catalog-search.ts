@@ -13,7 +13,7 @@ const QUERY: Record<"anime" | "characters", string> = {
     id name{full native} image{medium}}}}`,
 };
 
-export const Route = createFileRoute("/api/public/catalog-search")({
+export const Route = createFileRoute("/api/public/catalog-search")({ staticData: { sitemap: false },
   server: {
     handlers: {
       GET: async ({ request }) => {
