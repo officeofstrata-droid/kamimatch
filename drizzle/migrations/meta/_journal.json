@@ -64,6 +64,13 @@
       "when": 1792281779790,
       "tag": "0008_room_privacy_and_photo_retry_quota",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1792283634480,
+      "tag": "0009_restrict_community_room_reads_to_verified_users",
+      "breakpoints": true
     }
   ]
 }
