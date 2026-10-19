@@ -2,6 +2,7 @@ import { createServerFn } from '@tanstack/react-start';
 import { z } from 'zod';
 import { requireSupabaseAuth } from '@/integrations/supabase/auth-middleware';
 import { compatibility } from '@/lib/matching';
+import { matchQuota } from '@/lib/match-rules';
 
 export const getDating=createServerFn({method:'GET'}).middleware([requireSupabaseAuth]).handler(async({context})=>{
  const {supabase,userId}=context;
@@ -22,7 +23,7 @@ export const getDating=createServerFn({method:'GET'}).middleware([requireSupabas
  const photos=await Promise.all((media.data??[]).filter(x=>x.kind==='anime_photo').map(async x=>(await supabase.storage.from('profile-media').createSignedUrl(x.path,300)).data?.signedUrl));
  return {...row,photos:photos.filter((x):x is string=>!!x),...compatibility(own.data,taste.data)};
  }));
- return {verified:true,premium:premium.data===true,dailyPickId:daily.data,profiles:candidates.filter((row):row is NonNullable<typeof row>=>row!==null).sort((a,b)=>a.id===daily.data?-1:b.id===daily.data?1:b.score-a.score)};
+ return {verified:true,premium:premium.data===true,dailyPickId:daily.data,matchesRemaining:quota.remaining,profiles:candidates.filter((row):row is NonNullable<typeof row>=>row!==null).sort((a,b)=>a.id===daily.data?-1:b.id===daily.data?1:b.score-a.score)};
 });
 export const swipeMember=createServerFn({method:'POST'}).middleware([requireSupabaseAuth]).inputValidator(input=>z.object({target:z.string().uuid(),choice:z.enum(['like','pass','super'])}).parse(input)).handler(async({data,context})=>{
  const result=await context.supabase.rpc('cast_swipe',{_target:data.target,_choice:data.choice});
