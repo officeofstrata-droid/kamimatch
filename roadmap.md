@@ -3,7 +3,7 @@
 ## Didit-only and own-photo release
 - [x] Remove manual identity review and use only signed Didit approval for eligibility; legacy writes disabled and private records retained for owners
 - [x] Replace preset portrait selection with members' own photo-to-anime uploads; signed-in gallery and Didit-only screens checked, 30 tests passed
-- [ ] Check changed flows and publish; no additional real payment test requested
+- [x] Check changed flows and request publication to kamimatch.co.uk; no additional real payment test requested
 
 ## Live-use pass (18 Oct 2026)
 - [x] Removed sample swipe deck from the logged-out home page; replaced with a real landing page (how it works, features, safety)
@@ -65,4 +65,5 @@
 - Stripe test purchase and cancellation read back through the UI; test and live records are isolated, and test subscriptions never grant live feature/storage entitlements. External billing portal opened but rendered blank in the sandbox browser; in-app cancellation and renewal restoration were verified instead.
 - Real Didit approval remains unverified until the owner finishes a real identity check. Actual photo remix remains unverified without an owner-provided photo and consent; no generated sample was added to their account.
 - Safety-report moderation remains separate and requires an explicitly authorized moderator; removing identity reviewers does not remove human safety-report handling.
+- Fresh backend scan flagged the retired identity upload policy; inspected expression is literally false (no uploads allowed), while both active upload rules enforce owner folders. No policy was weakened or finding ignored.
 - Sample profiles and community counts are not real people or live rooms.
