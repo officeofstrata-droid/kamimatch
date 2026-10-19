@@ -2,12 +2,15 @@ import { createServerFn } from '@tanstack/react-start';
 import { z } from 'zod';
 import { requireSupabaseAuth } from '@/integrations/supabase/auth-middleware';
 import { compatibility } from '@/lib/matching';
+import { matchQuota } from '@/lib/match-rules';
 
 export const getDating=createServerFn({method:'GET'}).middleware([requireSupabaseAuth]).handler(async({context})=>{
  const {supabase,userId}=context;
- const [verified,premium,own,profiles,swipes]=await Promise.all([supabase.rpc('is_verified',{_user_id:userId}),supabase.rpc('is_premium',{_user_id:userId}),supabase.from('anime_preferences').select('*').eq('user_id',userId).maybeSingle(),supabase.from('profiles').select('*').neq('id',userId).limit(150),supabase.from('swipes').select('target_id').eq('actor_id',userId)]);
- if(verified.error || premium.error || profiles.error || own.error || swipes.error) throw new Error('Discovery could not be loaded.');
- if(!verified.data) return {verified:false,premium:premium.data===true,profiles:[],dailyPickId:null};
+ const monthStart=new Date(Date.UTC(new Date().getUTCFullYear(),new Date().getUTCMonth(),1)).toISOString();
+ const [verified,premium,own,profiles,swipes,monthly]=await Promise.all([supabase.rpc('is_verified',{_user_id:userId}),supabase.rpc('is_premium',{_user_id:userId}),supabase.from('anime_preferences').select('*').eq('user_id',userId).maybeSingle(),supabase.from('profiles').select('*').neq('id',userId).limit(150),supabase.from('swipes').select('target_id').eq('actor_id',userId),supabase.from('matches').select('id',{count:'exact',head:true}).or(`user_a.eq.${userId},user_b.eq.${userId}`).gte('created_at',monthStart)]);
+ if(verified.error || premium.error || profiles.error || own.error || swipes.error || monthly.error) throw new Error('Discovery could not be loaded.');
+ const quota=matchQuota(premium.data===true,monthly.count??0);
+ if(!verified.data) return {verified:false,premium:premium.data===true,profiles:[],dailyPickId:null,matchesRemaining:quota.remaining};
  const daily=await supabase.rpc('get_daily_soulmate');
  if(daily.error)throw new Error('Your daily connection could not be loaded.');
  const seen=new Set((swipes.data??[]).map(row=>row.target_id));
@@ -20,7 +23,7 @@ export const getDating=createServerFn({method:'GET'}).middleware([requireSupabas
  const photos=await Promise.all((media.data??[]).filter(x=>x.kind==='anime_photo').map(async x=>(await supabase.storage.from('profile-media').createSignedUrl(x.path,300)).data?.signedUrl));
  return {...row,photos:photos.filter((x):x is string=>!!x),...compatibility(own.data,taste.data)};
  }));
- return {verified:true,premium:premium.data===true,dailyPickId:daily.data,profiles:candidates.filter((row):row is NonNullable<typeof row>=>row!==null).sort((a,b)=>a.id===daily.data?-1:b.id===daily.data?1:b.score-a.score)};
+ return {verified:true,premium:premium.data===true,dailyPickId:daily.data,matchesRemaining:quota.remaining,profiles:candidates.filter((row):row is NonNullable<typeof row>=>row!==null).sort((a,b)=>a.id===daily.data?-1:b.id===daily.data?1:b.score-a.score)};
 });
 export const swipeMember=createServerFn({method:'POST'}).middleware([requireSupabaseAuth]).inputValidator(input=>z.object({target:z.string().uuid(),choice:z.enum(['like','pass','super'])}).parse(input)).handler(async({data,context})=>{
  const result=await context.supabase.rpc('cast_swipe',{_target:data.target,_choice:data.choice});
