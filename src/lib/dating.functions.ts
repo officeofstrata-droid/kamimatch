@@ -5,9 +5,11 @@ import { compatibility } from '@/lib/matching';
 
 export const getDating=createServerFn({method:'GET'}).middleware([requireSupabaseAuth]).handler(async({context})=>{
  const {supabase,userId}=context;
- const [verified,premium,own,profiles,swipes]=await Promise.all([supabase.rpc('is_verified',{_user_id:userId}),supabase.rpc('is_premium',{_user_id:userId}),supabase.from('anime_preferences').select('*').eq('user_id',userId).maybeSingle(),supabase.from('profiles').select('*').neq('id',userId).limit(150),supabase.from('swipes').select('target_id').eq('actor_id',userId)]);
- if(verified.error || premium.error || profiles.error || own.error || swipes.error) throw new Error('Discovery could not be loaded.');
- if(!verified.data) return {verified:false,premium:premium.data===true,profiles:[],dailyPickId:null};
+ const monthStart=new Date(Date.UTC(new Date().getUTCFullYear(),new Date().getUTCMonth(),1)).toISOString();
+ const [verified,premium,own,profiles,swipes,monthly]=await Promise.all([supabase.rpc('is_verified',{_user_id:userId}),supabase.rpc('is_premium',{_user_id:userId}),supabase.from('anime_preferences').select('*').eq('user_id',userId).maybeSingle(),supabase.from('profiles').select('*').neq('id',userId).limit(150),supabase.from('swipes').select('target_id').eq('actor_id',userId),supabase.from('matches').select('id',{count:'exact',head:true}).or(`user_a.eq.${userId},user_b.eq.${userId}`).gte('created_at',monthStart)]);
+ if(verified.error || premium.error || profiles.error || own.error || swipes.error || monthly.error) throw new Error('Discovery could not be loaded.');
+ const quota=matchQuota(premium.data===true,monthly.count??0);
+ if(!verified.data) return {verified:false,premium:premium.data===true,profiles:[],dailyPickId:null,matchesRemaining:quota.remaining};
  const daily=await supabase.rpc('get_daily_soulmate');
  if(daily.error)throw new Error('Your daily connection could not be loaded.');
  const seen=new Set((swipes.data??[]).map(row=>row.target_id));
